@@ -3363,17 +3363,19 @@
             The Document Stream Provider
             </summary>
         </member>
-        <member name="M:GroupDocs.Viewer.Handler.ViewerHandler.#ctor(GroupDocs.Viewer.Config.ViewerConfig)">
+        <member name="M:GroupDocs.Viewer.Handler.ViewerHandler.#ctor(GroupDocs.Viewer.Config.ViewerConfig,GroupDocs.Viewer.Config.EngineTypes)">
             <summary>
             Initializes a new instance of the <see cref="T:GroupDocs.Viewer.Handler.ViewerHandler"/> class.
             </summary>
             <param name="viewerConfig">The viewer configuration.</param>
+            <param name="engineType">The engine type.</param>
         </member>
-        <member name="M:GroupDocs.Viewer.Handler.ViewerHandler.#ctor(GroupDocs.Viewer.Config.ViewerConfig,GroupDocs.Viewer.Handler.Input.IInputDataHandler,GroupDocs.Viewer.Handler.Cache.ICacheDataHandler,GroupDocs.Viewer.Handler.Locale.ILocaleHandler,GroupDocs.Viewer.Helper.IFileDataStore)">
+        <member name="M:GroupDocs.Viewer.Handler.ViewerHandler.#ctor(GroupDocs.Viewer.Config.ViewerConfig,GroupDocs.Viewer.Config.EngineTypes,GroupDocs.Viewer.Handler.Input.IInputDataHandler,GroupDocs.Viewer.Handler.Cache.ICacheDataHandler,GroupDocs.Viewer.Handler.Locale.ILocaleHandler,GroupDocs.Viewer.Helper.IFileDataStore)">
             <summary>
             Initializes a new instance of the <see cref="T:GroupDocs.Viewer.Handler.ViewerHandler"/> class.
             </summary>
             <param name="viewerConfig">The viewer configuration.</param>
+            <param name="engineType">The engine type.</param>
             <param name="inputDataHandler">The input data handler.</param>
             <param name="cacheDataHandler">The cache data handler.</param>
             <param name="localeHandler">The locale handler.</param>
@@ -3624,6 +3626,18 @@
             </summary>
             <param name="request">The request.</param>
             <returns>System.Collections.Generic.List&lt;GroupDocs.Viewer.Domain.BrowserTreeNode&gt;.</returns>
+        </member>
+        <member name="T:GroupDocs.Viewer.Helper.FileDataHelper">
+            <summary>
+            Class FileDataHelper.
+            </summary>
+        </member>
+        <member name="M:GroupDocs.Viewer.Helper.FileDataHelper.GetFileDataFolderPath(GroupDocs.Viewer.Config.ViewerConfig)">
+            <summary>
+            Gets the file data path.
+            </summary>
+            <param name="viewerConfig">The viewer config.</param>
+            <returns>File data path.</returns>
         </member>
         <member name="T:GroupDocs.Viewer.Helper.FileDataJsonSerializer">
             <summary>

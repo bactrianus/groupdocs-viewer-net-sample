@@ -110,6 +110,7 @@ namespace MvcSample.Controllers
             return Content(serializedData, "application/json");
         }
 
+<<<<<<< HEAD
         public ActionResult LoadFileBrowserTreeData(LoadFileBrowserTreeDataParameters parameters)
         {
 
@@ -190,6 +191,9 @@ namespace MvcSample.Controllers
         //    throw new Exception();
         //}
 
+
+=======
+>>>>>>> e6842ea47f7e206d4a20ab58c4f547b4fb407db0
         private Watermark GetWatermark(ViewDocumentParameters request)
         {
             if (string.IsNullOrWhiteSpace(request.WatermarkText))
