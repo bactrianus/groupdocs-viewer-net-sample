@@ -44,20 +44,17 @@ namespace MvcSample.Controllers
         [HttpPost]
         public ActionResult ViewDocument(ViewDocumentParameters request)
         {
-            var docInfo = _htmlHandler.GetDocumentInfo(new GetDocumentInfoRequest(request.Path));
-            var docInfoAsJson = new FileDataJsonSerializer(docInfo.FileData, new FileDataOptions()).Serialize();
-
             var result = new ViewDocumentResponse
             {
-                documentDescription = docInfoAsJson,
                 pageCss = new string[] { },
                 lic = true
             };
 
-
-
             if (request.UseHtmlBasedEngine)
             {
+                var docInfo = _htmlHandler.GetDocumentInfo(new GetDocumentInfoRequest(request.Path));
+                result.documentDescription = new FileDataJsonSerializer(docInfo.FileData, new FileDataOptions()).Serialize();
+
                 var htmlOptions = new HtmlOptions
                 {
                     Watermark = GetWatermark(request)
@@ -68,6 +65,9 @@ namespace MvcSample.Controllers
             }
             else
             {
+                var docInfo = _imageHandler.GetDocumentInfo(new GetDocumentInfoRequest(request.Path));
+                result.documentDescription = new FileDataJsonSerializer(docInfo.FileData, new FileDataOptions()).Serialize();
+
                 var imageOptions = new ImageOptions
                 {
                     Watermark = GetWatermark(request)
@@ -104,7 +104,6 @@ namespace MvcSample.Controllers
             var serializedData = new JavaScriptSerializer().Serialize(result);
             return Content(serializedData, "application/json");
         }
-
 
         private Watermark GetWatermark(ViewDocumentParameters request)
         {
