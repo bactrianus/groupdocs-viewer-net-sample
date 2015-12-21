@@ -5,11 +5,14 @@ using GroupDocs.Viewer.Domain.Requests;
 using GroupDocs.Viewer.Handler;
 using GroupDocs.Viewer.Helper;
 using MvcSample.Models;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
+using WatermarkPosition = MvcSample.Models.WatermarkPosition;
 
 namespace MvcSample.Controllers
 {
@@ -29,6 +32,7 @@ namespace MvcSample.Controllers
             _imageHandler = new ViewerImageHandler(config);
 
             _htmlHandler.SetLicense(@"D:\GroupDocs.Viewer.lic");
+            _imageHandler.SetLicense(@"D:\GroupDocs.Viewer.lic");
         }
 
         // GET: /Viewer/
@@ -50,14 +54,26 @@ namespace MvcSample.Controllers
                 lic = true
             };
 
+
+
             if (request.UseHtmlBasedEngine)
             {
-                var htmlPages = _htmlHandler.GetPages(new FileDescription { Guid = request.Path, Name = request.Path }, new HtmlOptions());
+                var htmlOptions = new HtmlOptions
+                {
+                    Watermark = GetWatermark(request)
+                };
+
+                var htmlPages = _htmlHandler.GetPages(new FileDescription { Guid = request.Path, Name = request.Path }, htmlOptions);
                 result.pageHtml = htmlPages.Select(_ => _.HtmlContent).ToArray();
             }
             else
             {
-                var imagePages = _imageHandler.GetPages(new FileDescription { Guid = request.Path, Name = request.Path }, new ImageOptions());
+                var imageOptions = new ImageOptions
+                {
+                    Watermark = GetWatermark(request)
+                };
+
+                var imagePages = _imageHandler.GetPages(new FileDescription { Guid = request.Path, Name = request.Path }, imageOptions);
 
                 // Save images some where and provide urls
                 var urls = new List<string>();
@@ -87,6 +103,48 @@ namespace MvcSample.Controllers
 
             var serializedData = new JavaScriptSerializer().Serialize(result);
             return Content(serializedData, "application/json");
+        }
+
+
+        private Watermark GetWatermark(ViewDocumentParameters request)
+        {
+            if (string.IsNullOrWhiteSpace(request.WatermarkText))
+                return null;
+
+            return new Watermark(request.WatermarkText)
+                {
+                    Color = request.WatermarkColor.HasValue
+                        ? Color.FromArgb(request.WatermarkColor.Value)
+                        : Color.Red,
+                    Position = ToWatermarkPosition(request.WatermarkPosition),
+                    Width = request.WatermarkWidth
+                };
+        }
+
+        private GroupDocs.Viewer.Domain.WatermarkPosition? ToWatermarkPosition(WatermarkPosition? watermarkPosition)
+        {
+            if (!watermarkPosition.HasValue)
+                return GroupDocs.Viewer.Domain.WatermarkPosition.Diagonal;
+
+            switch (watermarkPosition.Value)
+            {
+                case WatermarkPosition.Diagonal:
+                    return GroupDocs.Viewer.Domain.WatermarkPosition.Diagonal;
+                case WatermarkPosition.TopLeft:
+                    return GroupDocs.Viewer.Domain.WatermarkPosition.TopLeft;
+                case WatermarkPosition.TopCenter:
+                    return GroupDocs.Viewer.Domain.WatermarkPosition.TopCenter;
+                case WatermarkPosition.TopRight:
+                    return GroupDocs.Viewer.Domain.WatermarkPosition.TopRight;
+                case WatermarkPosition.BottomLeft:
+                    return GroupDocs.Viewer.Domain.WatermarkPosition.BottomLeft;
+                case WatermarkPosition.BottomCenter:
+                    return GroupDocs.Viewer.Domain.WatermarkPosition.BottomCenter;
+                case WatermarkPosition.BottomRight:
+                    return GroupDocs.Viewer.Domain.WatermarkPosition.BottomRight;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }
