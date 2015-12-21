@@ -20,12 +20,13 @@ namespace MvcSample.Controllers
     {
         private readonly ViewerHtmlHandler _htmlHandler;
         private readonly ViewerImageHandler _imageHandler;
+        private readonly string _storagePath = @"C:\storage";
 
         public ViewerController()
         {
             var config = new ViewerConfig
             {
-                StoragePath = @"C:\storage"
+                StoragePath = _storagePath
             };
 
             _htmlHandler = new ViewerHtmlHandler(config);
@@ -54,13 +55,15 @@ namespace MvcSample.Controllers
                 lic = true
             };
 
-
-
             if (request.UseHtmlBasedEngine)
             {
                 var htmlOptions = new HtmlOptions
                 {
-                    Watermark = GetWatermark(request)
+                    Watermark = new Watermark("Watermark for html")
+                    {
+                        Color = Color.Blue,
+                        Position = GroupDocs.Viewer.Domain.WatermarkPosition.TopCenter
+                    }
                 };
 
                 var htmlPages = _htmlHandler.GetPages(new FileDescription { Guid = request.Path, Name = request.Path }, htmlOptions);
@@ -105,6 +108,86 @@ namespace MvcSample.Controllers
             return Content(serializedData, "application/json");
         }
 
+        public ActionResult LoadFileBrowserTreeData(LoadFileBrowserTreeDataParameters parameters)
+        {
+
+            var request = new LoadFileBrowserTreeRequest { Path = _storagePath };
+
+            var tree = _htmlHandler.LoadFileBrowserTreeData(request);
+
+            var data = new FileBrowserTreeDataResponse
+            {
+                nodes = ToFileTreeNodes(tree.Nodes).ToArray(),
+                count = tree.Nodes.Count
+            };
+
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+
+            string serializedData = serializer.Serialize(data);
+            return Content(serializedData, "application/json");
+        }
+
+        public ActionResult GetImageUrls(GetImageUrlsParameters parameters)
+        {
+            if (string.IsNullOrEmpty(parameters.Path))
+            {
+                GetImageUrlsResponse empty = new GetImageUrlsResponse();
+                empty.imageUrls = new string[0];
+
+                var serialized = new JavaScriptSerializer().Serialize(empty);
+                return Content(serialized, "application/json");
+            }
+
+            var imageOptions = new ImageOptions();
+            var imagePages = _imageHandler.GetPages(new FileDescription { Guid = parameters.Path, Name = parameters.Path }, imageOptions);
+
+            // Save images some where and provide urls
+            var urls = new List<string>();
+            var tempFolderPath = Path.Combine(Server.MapPath("~"), "Content", "TempStorage");
+
+            foreach (var pageImage in imagePages)
+            {
+                var docFoldePath = Path.Combine(tempFolderPath, parameters.Path);
+
+                if (!Directory.Exists(docFoldePath))
+                    Directory.CreateDirectory(docFoldePath);
+
+                var pageImageName = string.Format("{0}\\{1}.png", docFoldePath, pageImage.PageNumber);
+
+                using (var stream = pageImage.Stream)
+                using (FileStream fileStream = new FileStream(pageImageName, FileMode.Create))
+                {
+                    stream.Seek(0, SeekOrigin.Begin);
+                    stream.CopyTo(fileStream);
+                }
+
+                var baseUrl = Request.Url.Scheme + "://" + Request.Url.Authority + Request.ApplicationPath.TrimEnd('/') + "/";
+                urls.Add(string.Format("{0}Content/TempStorage/{1}/{2}.png", baseUrl, parameters.Path, pageImage.PageNumber));
+            }
+            GetImageUrlsResponse result = new GetImageUrlsResponse();
+            result.imageUrls = urls.ToArray();
+
+            var serializedData = new JavaScriptSerializer().Serialize(result);
+            return Content(serializedData, "application/json");
+        }
+
+
+
+        //public ActionResult GetFile(GetFileParameters parameters)
+        //{
+        //    var response = _htmlHandler.GetFile(parameters.Path);
+
+        //    if (response == null)
+        //        return new EmptyResult();
+
+        //    return File(response.Stream, "application/octet-stream", parameters.DisplayName);
+        //}
+
+        //public ActionResult GetPdfWithPrintDialog(GetFileParameters parameters)
+        //{
+        //    throw new Exception();
+        //}
+
 
         private Watermark GetWatermark(ViewDocumentParameters request)
         {
@@ -145,6 +228,28 @@ namespace MvcSample.Controllers
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private List<FileBrowserTreeNode> ToFileTreeNodes(List<BrowserTreeNode> nodes)
+        {
+            var result = new List<FileBrowserTreeNode>();
+
+            foreach (var _ in nodes)
+            {
+                var x = new FileBrowserTreeNode
+                {
+                    path = _.Name,
+                    docType = _.DocumentType,
+                    fileType = _.FileType,
+                    name = _.Name,
+                    size = _.Size,
+                    modifyTime = (long)(_.DateModified - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds,
+                    type = _.Type
+                };
+                x.nodes = ToFileTreeNodes(_.Nodes);
+                result.Add(x);
+            }
+            return result;
         }
     }
 }

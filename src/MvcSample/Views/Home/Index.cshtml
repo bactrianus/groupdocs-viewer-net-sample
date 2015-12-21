@@ -31,12 +31,16 @@
             $('#viewerHtmlDiv').groupdocsViewer({
                 filePath: 'candy.pdf',
                 zoomToFitWidth: true,
+                //downloadPdfFile: true,
+                //showDownload: true,
+                showFolderBrowser: true,
+                showHeader: true,
+                showPaging: true,
+                //showPrint: true,
+                showThumbnails: true,
+                useHtmlThumbnails: true,
                 width: 600,
                 height: 900,
-                //watermarkColor: '55',
-                //watermarkFontSize: 12,
-                //watermarkPosition: 'Diagonal',
-                //watermarkText: 'Watermark for html',
                 useHtmlBasedEngine: true
             });
         });
