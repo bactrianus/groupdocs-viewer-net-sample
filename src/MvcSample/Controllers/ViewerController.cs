@@ -20,13 +20,14 @@ namespace MvcSample.Controllers
     {
         private readonly ViewerHtmlHandler _htmlHandler;
         private readonly ViewerImageHandler _imageHandler;
-        private readonly string _storagePath = @"C:\storage";
+        private readonly string _storagePath = AppDomain.CurrentDomain.GetData("DataDirectory").ToString(); // App_Data folder path
 
         public ViewerController()
         {
             var config = new ViewerConfig
             {
-                StoragePath = _storagePath
+                StoragePath = _storagePath,
+                UseCache = true
             };
 
             _htmlHandler = new ViewerHtmlHandler(config);
@@ -62,7 +63,8 @@ namespace MvcSample.Controllers
                     {
                         Color = Color.Blue,
                         Position = GroupDocs.Viewer.Domain.WatermarkPosition.TopCenter
-                    }
+                    },
+                    IsResourcesEmbedded = true
                 };
 
                 var htmlPages = _htmlHandler.GetPages(new FileDescription { Guid = request.Path, Name = request.Path }, htmlOptions);
@@ -80,7 +82,7 @@ namespace MvcSample.Controllers
 
                 var imagePages = _imageHandler.GetPages(new FileDescription { Guid = request.Path, Name = request.Path }, imageOptions);
 
-                // Save images some where and provide urls
+                // Save images somewhere and provide urls
                 var urls = new List<string>();
                 var tempFolderPath = Path.Combine(Server.MapPath("~"), "Content", "TempStorage");
 
@@ -105,14 +107,14 @@ namespace MvcSample.Controllers
                 }
                 result.imageUrls = urls.ToArray();
             }
+            var serializer = new JavaScriptSerializer { MaxJsonLength = int.MaxValue };
 
-            var serializedData = new JavaScriptSerializer().Serialize(result);
+            var serializedData = serializer.Serialize(result);
             return Content(serializedData, "application/json");
         }
 
         public ActionResult LoadFileBrowserTreeData(LoadFileBrowserTreeDataParameters parameters)
         {
-
             var request = new LoadFileBrowserTreeRequest { Path = _storagePath };
 
             var tree = _htmlHandler.LoadFileBrowserTreeData(request);
@@ -125,7 +127,7 @@ namespace MvcSample.Controllers
 
             JavaScriptSerializer serializer = new JavaScriptSerializer();
 
-            string serializedData = serializer.Serialize(data);
+            var serializedData = serializer.Serialize(data);
             return Content(serializedData, "application/json");
         }
 
@@ -133,8 +135,7 @@ namespace MvcSample.Controllers
         {
             if (string.IsNullOrEmpty(parameters.Path))
             {
-                GetImageUrlsResponse empty = new GetImageUrlsResponse();
-                empty.imageUrls = new string[0];
+                GetImageUrlsResponse empty = new GetImageUrlsResponse { imageUrls = new string[0] };
 
                 var serialized = new JavaScriptSerializer().Serialize(empty);
                 return Content(serialized, "application/json");
@@ -166,8 +167,7 @@ namespace MvcSample.Controllers
                 var baseUrl = Request.Url.Scheme + "://" + Request.Url.Authority + Request.ApplicationPath.TrimEnd('/') + "/";
                 urls.Add(string.Format("{0}Content/TempStorage/{1}/{2}.png", baseUrl, parameters.Path, pageImage.PageNumber));
             }
-            GetImageUrlsResponse result = new GetImageUrlsResponse();
-            result.imageUrls = urls.ToArray();
+            GetImageUrlsResponse result = new GetImageUrlsResponse { imageUrls = urls.ToArray() };
 
             var serializedData = new JavaScriptSerializer().Serialize(result);
             return Content(serializedData, "application/json");
@@ -231,13 +231,10 @@ namespace MvcSample.Controllers
             }
         }
 
-        private List<FileBrowserTreeNode> ToFileTreeNodes(List<BrowserTreeNode> nodes)
+        private List<FileBrowserTreeNode> ToFileTreeNodes(IEnumerable<BrowserTreeNode> nodes)
         {
-            var result = new List<FileBrowserTreeNode>();
-
-            foreach (var _ in nodes)
-            {
-                var x = new FileBrowserTreeNode
+            return nodes.Select(_ =>
+                new FileBrowserTreeNode
                 {
                     path = _.Name,
                     docType = _.DocumentType,
@@ -245,12 +242,10 @@ namespace MvcSample.Controllers
                     name = _.Name,
                     size = _.Size,
                     modifyTime = (long)(_.DateModified - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds,
-                    type = _.Type
-                };
-                x.nodes = ToFileTreeNodes(_.Nodes);
-                result.Add(x);
-            }
-            return result;
+                    type = _.Type,
+                    nodes = ToFileTreeNodes(_.Nodes)
+                })
+                .ToList();
         }
     }
 }

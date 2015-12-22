@@ -46,16 +46,19 @@
         });
 
 
-        //$(function () {
-        //    $('#viewerImageDiv').groupdocsViewer({
-        //        filePath: 'candy.pdf',
-        //        zoomToFitWidth: true,
-        //        width: 600,
-        //        height: 900,
-        //        watermarkPosition: 'Diagonal',
-        //        watermarkText: 'Watermark for image',
-        //        useHtmlBasedEngine: false
-        //    });
-        //});
+        $(function () {
+            $('#viewerImageDiv').groupdocsViewer({
+                filePath: 'demo.docx',
+                zoomToFitWidth: true,
+                showFolderBrowser: true,
+                showHeader: true,
+                showPaging: true,
+                width: 600,
+                height: 900,
+                watermarkPosition: 'Diagonal',
+                watermarkText: 'Watermark for image',
+                useHtmlBasedEngine: false
+            });
+        });
     </script>
 }
