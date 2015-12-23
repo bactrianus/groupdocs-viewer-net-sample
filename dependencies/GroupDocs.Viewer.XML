@@ -3840,6 +3840,75 @@
             </summary>
             <value>The file description.</value>
         </member>
+        <member name="T:GroupDocs.Viewer.Helper.HtmlWatermark">
+            <summary>
+            Class HtmlWatermark.
+            </summary>
+        </member>
+        <member name="M:GroupDocs.Viewer.Helper.HtmlWatermark.#ctor(GroupDocs.Viewer.Domain.Watermark)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GroupDocs.Viewer.Helper.HtmlWatermark"/> class.
+            </summary>
+            <param name="watermark">The watermark.</param>
+        </member>
+        <member name="M:GroupDocs.Viewer.Helper.HtmlWatermark.AddWatermark(System.String,System.Int32,System.Int32)">
+            <summary>
+            Adds watermark to html document.
+            </summary>
+            <param name="html">The html document.</param>
+            <param name="width">The document width.</param>
+            <param name="height">The document height.</param>
+            <returns>Html document with watermark.</returns>
+        </member>
+        <member name="M:GroupDocs.Viewer.Helper.HtmlWatermark.AddWatermark(System.IO.Stream,System.Int32,System.Int32)">
+            <summary>
+            Adds watermark to html document.
+            </summary>
+            <param name="stream">The html document stream.</param>
+            <param name="width">The document width.</param>
+            <param name="height">The document height.</param>
+            <returns>Html document with watermark.</returns>
+        </member>
+        <member name="M:GroupDocs.Viewer.Helper.HtmlWatermark.GetMessageBlock">
+            <summary>
+            Gets html message block.
+            </summary>
+            <returns>Message block.</returns>
+        </member>
+        <member name="M:GroupDocs.Viewer.Helper.HtmlWatermark.GetColorNameOrDefault">
+            <summary>
+            Gets color name or default 'red'. 
+            </summary>
+            <returns>Color name.</returns>
+        </member>
+        <member name="M:GroupDocs.Viewer.Helper.HtmlWatermark.GetDimmensions(System.Int32,System.Int32)">
+            <summary>
+            Gets watermark text dimmensions.
+            </summary>
+            <param name="width">The document width.</param>
+            <param name="height">The document height.</param>
+            <returns>Watermark text dimmensions.</returns>
+        </member>
+        <member name="T:GroupDocs.Viewer.Helper.HtmlWatermark.HtmlWateramrkDimmensions">
+            <summary>
+            Class HtmlWateramrkDimmensions.
+            </summary>
+        </member>
+        <member name="P:GroupDocs.Viewer.Helper.HtmlWatermark.HtmlWateramrkDimmensions.Width">
+            <summary>
+            The watermark text widht.
+            </summary>
+        </member>
+        <member name="P:GroupDocs.Viewer.Helper.HtmlWatermark.HtmlWateramrkDimmensions.Height">
+            <summary>
+            The watermark text height.
+            </summary>
+        </member>
+        <member name="P:GroupDocs.Viewer.Helper.HtmlWatermark.HtmlWateramrkDimmensions.FontSize">
+            <summary>
+            The watermark text font size.
+            </summary>
+        </member>
         <member name="T:GroupDocs.Viewer.Helper.ImageHelper">
             <summary>
             Class ImageHelper.
@@ -3874,6 +3943,48 @@
             </summary>
             <param name="imageStream">The image stream.</param>
             <returns>System.String.</returns>
+        </member>
+        <member name="T:GroupDocs.Viewer.Helper.InterProcessLock">
+            <summary>
+            Class InterProcessLock.
+            </summary>
+        </member>
+        <member name="F:GroupDocs.Viewer.Helper.InterProcessLock.MutexPrefix">
+            <summary>
+            The mutex prefix.
+            </summary>
+        </member>
+        <member name="F:GroupDocs.Viewer.Helper.InterProcessLock._mutex">
+            <summary>
+            The mutex.
+            </summary>
+        </member>
+        <member name="M:GroupDocs.Viewer.Helper.InterProcessLock.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GroupDocs.Viewer.Helper.InterProcessLock"/> class.
+            </summary>
+            <param name="path">The file path</param>
+        </member>
+        <member name="F:GroupDocs.Viewer.Helper.InterProcessLock._disposed">
+            <summary>
+            Indicates whether Dispose was called
+            </summary>
+        </member>
+        <member name="M:GroupDocs.Viewer.Helper.InterProcessLock.Dispose(System.Boolean)">
+            <summary>
+            Releases mutex
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:GroupDocs.Viewer.Helper.InterProcessLock.Dispose">
+            <summary>
+            Releases resources
+            </summary>
+        </member>
+        <member name="M:GroupDocs.Viewer.Helper.InterProcessLock.Finalize">
+            <summary>
+            Finalizer method
+            </summary>
         </member>
         <member name="T:GroupDocs.Viewer.Helper.MultiIcon">
             <summary>

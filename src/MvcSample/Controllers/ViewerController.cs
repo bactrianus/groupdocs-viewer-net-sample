@@ -20,21 +20,25 @@ namespace MvcSample.Controllers
     {
         private readonly ViewerHtmlHandler _htmlHandler;
         private readonly ViewerImageHandler _imageHandler;
+
+        private const string _licensePath = @"D:\GroupDocs.Viewer.lic";
         private readonly string _storagePath = AppDomain.CurrentDomain.GetData("DataDirectory").ToString(); // App_Data folder path
+        private readonly ViewerConfig _config;
+
 
         public ViewerController()
         {
-            var config = new ViewerConfig
+            _config = new ViewerConfig
             {
                 StoragePath = _storagePath,
                 UseCache = true
             };
 
-            _htmlHandler = new ViewerHtmlHandler(config);
-            _imageHandler = new ViewerImageHandler(config);
+            _htmlHandler = new ViewerHtmlHandler(_config);
+            _imageHandler = new ViewerImageHandler(_config);
 
-            _htmlHandler.SetLicense(@"D:\GroupDocs.Viewer.lic");
-            _imageHandler.SetLicense(@"D:\GroupDocs.Viewer.lic");
+            _htmlHandler.SetLicense(_licensePath);
+            _imageHandler.SetLicense(_licensePath);
         }
 
         // GET: /Viewer/
@@ -57,16 +61,7 @@ namespace MvcSample.Controllers
                 var docInfo = _htmlHandler.GetDocumentInfo(new GetDocumentInfoRequest(request.Path));
                 result.documentDescription = new FileDataJsonSerializer(docInfo.FileData, new FileDataOptions()).Serialize();
 
-                var htmlOptions = new HtmlOptions
-                {
-                    Watermark = new Watermark("Watermark for html")
-                    {
-                        Color = Color.Blue,
-                        Position = GroupDocs.Viewer.Domain.WatermarkPosition.TopCenter
-                    },
-                    IsResourcesEmbedded = true
-                };
-
+                var htmlOptions = new HtmlOptions { IsResourcesEmbedded = true };
                 var htmlPages = _htmlHandler.GetPages(new FileDescription { Guid = request.Path, Name = request.Path }, htmlOptions);
                 result.pageHtml = htmlPages.Select(_ => _.HtmlContent).ToArray();
             }
@@ -75,15 +70,13 @@ namespace MvcSample.Controllers
                 var docInfo = _imageHandler.GetDocumentInfo(new GetDocumentInfoRequest(request.Path));
                 result.documentDescription = new FileDataJsonSerializer(docInfo.FileData, new FileDataOptions()).Serialize();
 
-                var imageOptions = new ImageOptions
-                {
-                    Watermark = GetWatermark(request)
-                };
-
+                var imageOptions = new ImageOptions { Watermark = GetWatermark(request) };
                 var imagePages = _imageHandler.GetPages(new FileDescription { Guid = request.Path, Name = request.Path }, imageOptions);
 
-                // Save images somewhere and provide urls
+                // Provide images urls
                 var urls = new List<string>();
+
+                // If no cache - save images to temp folder
                 var tempFolderPath = Path.Combine(Server.MapPath("~"), "Content", "TempStorage");
 
                 foreach (var pageImage in imagePages)
@@ -105,6 +98,7 @@ namespace MvcSample.Controllers
                     var baseUrl = Request.Url.Scheme + "://" + Request.Url.Authority + Request.ApplicationPath.TrimEnd('/') + "/";
                     urls.Add(string.Format("{0}Content/TempStorage/{1}/{2}.png", baseUrl, request.Path, pageImage.PageNumber));
                 }
+
                 result.imageUrls = urls.ToArray();
             }
             var serializer = new JavaScriptSerializer { MaxJsonLength = int.MaxValue };
@@ -167,6 +161,7 @@ namespace MvcSample.Controllers
                 var baseUrl = Request.Url.Scheme + "://" + Request.Url.Authority + Request.ApplicationPath.TrimEnd('/') + "/";
                 urls.Add(string.Format("{0}Content/TempStorage/{1}/{2}.png", baseUrl, parameters.Path, pageImage.PageNumber));
             }
+
             GetImageUrlsResponse result = new GetImageUrlsResponse { imageUrls = urls.ToArray() };
 
             var serializedData = new JavaScriptSerializer().Serialize(result);

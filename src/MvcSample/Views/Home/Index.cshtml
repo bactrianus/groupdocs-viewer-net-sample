@@ -1,16 +1,13 @@
-﻿@{
-    ViewBag.Title = "Home Page";
-}
-<h1>GroupDocs.Viewer for .NET Sample</h1>
-
+﻿<h2 style="text-align: center">GroupDocs.Viewer for .NET Sample</h2>
 
 <table>
     <tr>
-        <td>
-            <h2>View document in HTML mode</h2>
+        <td style="text-align: center">
+            <h4>View document in HTML mode</h4>
         </td>
-        <td>
-            <h2>View document in image mode</h2>
+        <td></td>
+        <td style="text-align: center">
+            <h4>View document in image mode</h4>
         </td>
      </tr>
     <tr>
@@ -18,6 +15,7 @@
            
             <div id="viewerHtmlDiv"></div>
         </td>
+        <td style="width:30px"></td>
         <td>
             
             <div id="viewerImageDiv"></div>
@@ -39,7 +37,7 @@
                 //showPrint: true,
                 showThumbnails: true,
                 useHtmlThumbnails: true,
-                width: 600,
+                width: 650,
                 height: 900,
                 useHtmlBasedEngine: true
             });
@@ -53,7 +51,7 @@
                 showFolderBrowser: true,
                 showHeader: true,
                 showPaging: true,
-                width: 600,
+                width: 650,
                 height: 900,
                 watermarkPosition: 'Diagonal',
                 watermarkText: 'Watermark for image',
