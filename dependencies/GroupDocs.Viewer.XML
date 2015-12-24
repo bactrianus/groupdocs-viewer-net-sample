@@ -4796,17 +4796,6 @@
             </summary>
             <param name="url">The url.</param>
         </member>
-        <member name="T:GroupDocs.Viewer.Helper.TempFolderHelper">
-            <summary>
-            Class TempFolderHelper.
-            </summary>
-        </member>
-        <member name="M:GroupDocs.Viewer.Helper.TempFolderHelper.GetGroupDocsTempFolderPath">
-            <summary>
-            Gets the GroupDocs temporary folder path.
-            </summary>
-            <returns>System.String.</returns>
-        </member>
         <member name="T:GroupDocs.Viewer.Helper.Tuple`1">
             <summary>
             Class Tuple.
@@ -5063,6 +5052,11 @@
             The watermark position
             </summary>
         </member>
+        <member name="F:GroupDocs.Viewer.Config.ViewerConfig._tempPath">
+            <summary>
+            The temp path
+            </summary>
+        </member>
         <member name="P:GroupDocs.Viewer.Config.ViewerConfig.StoragePath">
             <summary>
             Gets or sets the storage path.
@@ -5080,6 +5074,12 @@
             Path to directory where processing files stored
             </summary>
             <value>The processing folder path.</value>
+        </member>
+        <member name="P:GroupDocs.Viewer.Config.ViewerConfig.TempPath">
+            <summary>
+            Gets or sets the temp path.
+            </summary>
+            <value>The temp path.</value>
         </member>
         <member name="P:GroupDocs.Viewer.Config.ViewerConfig.UseCache">
             <summary>

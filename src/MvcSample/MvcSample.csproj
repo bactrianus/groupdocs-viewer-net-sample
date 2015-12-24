@@ -20,6 +20,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -39,8 +40,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GroupDocs.Viewer, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="GroupDocs.Viewer">
       <HintPath>..\..\dependencies\GroupDocs.Viewer.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
@@ -112,13 +112,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
     <Folder Include="Content\TempStorage\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\FileDataJsonSerializer.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ViewerController.cs" />
     <Compile Include="Global.asax.cs">
@@ -131,6 +131,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\candy.pdf" />
+    <Content Include="App_Data\demo.docx" />
+    <Content Include="App_Data\sample.pptx" />
+    <Content Include="App_Data\sample.xlsx" />
     <Content Include="Content\CSS\bootstrap.css" />
     <Content Include="Content\CSS\dialog.css" />
     <Content Include="Content\CSS\groupdocsViewer.all.css" />
@@ -165,7 +169,9 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Properties\PublishProfiles\k2.pubxml" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
     <Content Include="Content\fonts\PT_Sans-Web-Bold.ttf" />

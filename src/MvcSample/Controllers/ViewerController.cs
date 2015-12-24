@@ -3,7 +3,6 @@ using GroupDocs.Viewer.Converter.Option;
 using GroupDocs.Viewer.Domain;
 using GroupDocs.Viewer.Domain.Requests;
 using GroupDocs.Viewer.Handler;
-using GroupDocs.Viewer.Helper;
 using MvcSample.Models;
 using System;
 using System.Collections.Generic;
@@ -21,16 +20,17 @@ namespace MvcSample.Controllers
         private readonly ViewerHtmlHandler _htmlHandler;
         private readonly ViewerImageHandler _imageHandler;
 
-        private const string _licensePath = @"D:\GroupDocs.Viewer.lic";
-        private readonly string _storagePath = AppDomain.CurrentDomain.GetData("DataDirectory").ToString(); // App_Data folder path
+        private string _licensePath = "D:\\vlitvinchik\\sites\\yanalitvinchik.com\\GroupDocs.Viewer.lic";
+        private string _storagePath = AppDomain.CurrentDomain.GetData("DataDirectory").ToString(); // App_Data folder path
+        private string _tempPath = AppDomain.CurrentDomain.GetData("DataDirectory") + "\\Temp";
         private readonly ViewerConfig _config;
-
 
         public ViewerController()
         {
             _config = new ViewerConfig
             {
                 StoragePath = _storagePath,
+                TempPath = _tempPath,
                 UseCache = true
             };
 
@@ -59,16 +59,29 @@ namespace MvcSample.Controllers
             if (request.UseHtmlBasedEngine)
             {
                 var docInfo = _htmlHandler.GetDocumentInfo(new GetDocumentInfoRequest(request.Path));
-                result.documentDescription = new FileDataJsonSerializer(docInfo.FileData, new FileDataOptions()).Serialize();
+                result.documentDescription = new FileDataJsonSerializer(docInfo.FileData, new FileDataOptions()).Serialize(false);
+                result.docType = docInfo.DocumentType;
+                result.fileType = docInfo.DocumentFileType;
 
-                var htmlOptions = new HtmlOptions { IsResourcesEmbedded = true };
+                var htmlOptions = new HtmlOptions { IsResourcesEmbedded = true, Watermark = GetWatermark(request) };
                 var htmlPages = _htmlHandler.GetPages(new FileDescription { Guid = request.Path, Name = request.Path }, htmlOptions);
                 result.pageHtml = htmlPages.Select(_ => _.HtmlContent).ToArray();
+
+                //NOTE: Fix for incomplete cells document
+                for (int i = 0; i < result.pageHtml.Length; i++)
+                {
+                    var html = result.pageHtml[i];
+                    var indexOfScript = html.IndexOf("script");
+                    if (indexOfScript > 0)
+                        result.pageHtml[i] = html.Substring(0, indexOfScript);
+                }
             }
             else
             {
                 var docInfo = _imageHandler.GetDocumentInfo(new GetDocumentInfoRequest(request.Path));
-                result.documentDescription = new FileDataJsonSerializer(docInfo.FileData, new FileDataOptions()).Serialize();
+                result.documentDescription = new FileDataJsonSerializer(docInfo.FileData, new FileDataOptions()).Serialize(true);
+                result.docType = docInfo.DocumentType;
+                result.fileType = docInfo.DocumentFileType;
 
                 var imageOptions = new ImageOptions { Watermark = GetWatermark(request) };
                 var imagePages = _imageHandler.GetPages(new FileDescription { Guid = request.Path, Name = request.Path }, imageOptions);
