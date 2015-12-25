@@ -6,9 +6,12 @@ using GroupDocs.Viewer.Handler;
 using MvcSample.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using WatermarkPosition = MvcSample.Models.WatermarkPosition;
@@ -20,7 +23,8 @@ namespace MvcSample.Controllers
         private readonly ViewerHtmlHandler _htmlHandler;
         private readonly ViewerImageHandler _imageHandler;
 
-        private string _licensePath = "D:\\vlitvinchik\\sites\\yanalitvinchik.com\\GroupDocs.Viewer.lic";
+        private string _licensePath = "C:\\licenses\\GroupDocs.Viewer.lic";
+        //private string _licensePath = "D:\\vlitvinchik\\sites\\yanalitvinchik.com\\GroupDocs.Viewer.lic";
         private string _storagePath = AppDomain.CurrentDomain.GetData("DataDirectory").ToString(); // App_Data folder path
         private string _tempPath = AppDomain.CurrentDomain.GetData("DataDirectory") + "\\Temp";
         private readonly ViewerConfig _config;
@@ -53,7 +57,10 @@ namespace MvcSample.Controllers
             var result = new ViewDocumentResponse
             {
                 pageCss = new string[] { },
-                lic = true
+                lic = true,
+                pdfDownloadUrl = GetPdfDownloadUrl(request),
+                pdfPrintUrl = GetPdfPrintUrl(request),
+                url = GetFileUrl(request)
             };
 
             if (request.UseHtmlBasedEngine)
@@ -181,17 +188,46 @@ namespace MvcSample.Controllers
             return Content(serializedData, "application/json");
         }
 
+        public ActionResult GetFile(GetFileParameters parameters)
+        {
+            var displayName = string.IsNullOrEmpty(parameters.DisplayName) ?
+                Path.GetFileName(parameters.Path) : Uri.EscapeDataString(parameters.DisplayName);
 
+            Stream fileStream;
+            if (parameters.GetPdf)
+            {
+                displayName = Path.ChangeExtension(displayName, "pdf");
 
-        //public ActionResult GetFile(GetFileParameters parameters)
-        //{
-        //    var response = _htmlHandler.GetFile(parameters.Path);
+                var getPdfFileRequest = new GetPdfFileRequest
+                {
+                    Guid = parameters.Path,
+                    IsPrintable = parameters.IsPrintable,
+                    IsRotatable = parameters.SupportPageRotation,
+                    IsReorderable = true,
+                    Watermark = GetWatermark(parameters),
+                    //Password = "" //it is required here
+                };
 
-        //    if (response == null)
-        //        return new EmptyResult();
+                var pdfFileResponse = _htmlHandler.GetPdfFile(getPdfFileRequest);
+                if (pdfFileResponse == null)
+                    return new EmptyResult();
 
-        //    return File(response.Stream, "application/octet-stream", parameters.DisplayName);
-        //}
+                fileStream = pdfFileResponse.Stream;
+            }
+            else
+            {
+                var fileResponse = _htmlHandler.GetFile(parameters.Path);
+                if (fileResponse == null)
+                    return new EmptyResult();
+
+                fileStream = fileResponse.Stream;
+            }
+
+            //jquery.fileDownload uses this cookie to determine that a file download has completed successfully
+            Response.SetCookie(new HttpCookie("jqueryFileDownloadJSForGD", "true") { Path = "/" });
+
+            return File(fileStream, "application/octet-stream", displayName);
+        }
 
         //public ActionResult GetPdfWithPrintDialog(GetFileParameters parameters)
         //{
@@ -199,6 +235,21 @@ namespace MvcSample.Controllers
         //}
 
         private Watermark GetWatermark(ViewDocumentParameters request)
+        {
+            if (string.IsNullOrWhiteSpace(request.WatermarkText))
+                return null;
+
+            return new Watermark(request.WatermarkText)
+                {
+                    Color = request.WatermarkColor.HasValue
+                        ? Color.FromArgb(request.WatermarkColor.Value)
+                        : Color.Red,
+                    Position = ToWatermarkPosition(request.WatermarkPosition),
+                    Width = request.WatermarkWidth
+                };
+        }
+
+        private Watermark GetWatermark(GetFileParameters request)
         {
             if (string.IsNullOrWhiteSpace(request.WatermarkText))
                 return null;
@@ -255,5 +306,72 @@ namespace MvcSample.Controllers
                 })
                 .ToList();
         }
+
+
+        private string GetFileUrl(ViewDocumentParameters request)
+        {
+            return GetFileUrl(request.Path, false, false, request.FileDisplayName);
+        }
+
+        private string GetPdfPrintUrl(ViewDocumentParameters request)
+        {
+            return GetFileUrl(request.Path, true, true, request.FileDisplayName,
+                request.WatermarkText, request.WatermarkColor,
+                request.WatermarkPosition, request.WatermarkWidth,
+                request.IgnoreDocumentAbsence,
+                request.UseHtmlBasedEngine, request.SupportPageRotation);
+        }
+
+        private string GetPdfDownloadUrl(ViewDocumentParameters request)
+        {
+            return GetFileUrl(request.Path, true, false, request.FileDisplayName,
+                request.WatermarkText, request.WatermarkColor,
+                request.WatermarkPosition, request.WatermarkWidth,
+                request.IgnoreDocumentAbsence,
+                request.UseHtmlBasedEngine, request.SupportPageRotation);
+        }
+
+        public string GetFileUrl(string path, bool getPdf, bool isPrintable, string fileDisplayName = null,
+                               string watermarkText = null, int? watermarkColor = null,
+                               WatermarkPosition? watermarkPosition = WatermarkPosition.Diagonal, float? watermarkWidth = 0,
+                               bool ignoreDocumentAbsence = false,
+                               bool useHtmlBasedEngine = false,
+                               bool supportPageRotation = false)
+        {
+            NameValueCollection queryString = HttpUtility.ParseQueryString(string.Empty);
+            queryString["path"] = path;
+            if (!isPrintable)
+            {
+                queryString["getPdf"] = getPdf.ToString().ToLower();
+                if (fileDisplayName != null)
+                    queryString["displayName"] = fileDisplayName;
+            }
+
+            if (watermarkText != null)
+            {
+                queryString["watermarkText"] = watermarkText;
+                queryString["watermarkColor"] = watermarkColor.ToString();
+                if (watermarkPosition.HasValue)
+                    queryString["watermarkPosition"] = watermarkPosition.ToString();
+                if (watermarkWidth.HasValue)
+                    queryString["watermarkWidth"] = ((float)watermarkWidth).ToString(CultureInfo.InvariantCulture);
+            }
+
+            if (ignoreDocumentAbsence)
+            {
+                queryString["ignoreDocumentAbsence"] = ignoreDocumentAbsence.ToString().ToLower();
+            }
+
+            queryString["useHtmlBasedEngine"] = useHtmlBasedEngine.ToString().ToLower();
+            queryString["supportPageRotation"] = supportPageRotation.ToString().ToLower();
+
+            var handlerName = isPrintable ? "GetPdfWithPrintDialog" : "GetFile";
+
+            var baseUrl = Request.Url.Scheme + "://" + Request.Url.Authority + Request.ApplicationPath.TrimEnd('/') + "/document-viewer/";
+
+            string fileUrl = string.Format("{0}{1}?{2}", baseUrl, handlerName, queryString);
+            return fileUrl;
+        }
+
     }
 }
