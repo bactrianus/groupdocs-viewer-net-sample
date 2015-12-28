@@ -11,6 +11,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
@@ -60,7 +61,9 @@ namespace MvcSample.Controllers
                 lic = true,
                 pdfDownloadUrl = GetPdfDownloadUrl(request),
                 pdfPrintUrl = GetPdfPrintUrl(request),
-                url = GetFileUrl(request)
+                url = GetFileUrl(request),
+                path = request.Path,
+                name = Path.GetFileName(request.Path)
             };
 
             if (request.UseHtmlBasedEngine)
@@ -205,34 +208,43 @@ namespace MvcSample.Controllers
                     IsRotatable = parameters.SupportPageRotation,
                     IsReorderable = true,
                     Watermark = GetWatermark(parameters),
-                    //Password = "" //it is required here
                 };
 
                 var pdfFileResponse = _htmlHandler.GetPdfFile(getPdfFileRequest);
-                if (pdfFileResponse == null)
-                    return new EmptyResult();
-
                 fileStream = pdfFileResponse.Stream;
             }
             else
             {
                 var fileResponse = _htmlHandler.GetFile(parameters.Path);
-                if (fileResponse == null)
-                    return new EmptyResult();
-
                 fileStream = fileResponse.Stream;
             }
 
             //jquery.fileDownload uses this cookie to determine that a file download has completed successfully
             Response.SetCookie(new HttpCookie("jqueryFileDownloadJSForGD", "true") { Path = "/" });
 
-            return File(fileStream, "application/octet-stream", displayName);
+            return File(GetBytes(fileStream), "application/octet-stream", displayName);
         }
 
-        //public ActionResult GetPdfWithPrintDialog(GetFileParameters parameters)
-        //{
-        //    throw new Exception();
-        //}
+        public ActionResult GetPdfWithPrintDialog(GetFileParameters parameters)
+        {
+            var displayName = string.IsNullOrEmpty(parameters.DisplayName) ?
+               Path.GetFileName(parameters.Path) : Uri.EscapeDataString(parameters.DisplayName);
+            
+            var getPdfFileRequest = new GetPdfFileRequest
+            {
+                Guid = parameters.Path,
+                IsPrintable = true,
+                IsReorderable = true,
+                IsRotatable = parameters.SupportPageRotation,
+                Watermark = GetWatermark(parameters)
+            };
+            var response = _htmlHandler.GetPdfFile(getPdfFileRequest);
+            
+            string contentDispositionString = new ContentDisposition { FileName = displayName, Inline = true }.ToString();
+            Response.AddHeader("Content-Disposition", contentDispositionString);
+
+            return File(((MemoryStream)response.Stream).ToArray(), "application/pdf");
+        }
 
         private Watermark GetWatermark(ViewDocumentParameters request)
         {
@@ -371,6 +383,15 @@ namespace MvcSample.Controllers
 
             string fileUrl = string.Format("{0}{1}?{2}", baseUrl, handlerName, queryString);
             return fileUrl;
+        }
+
+        private byte[] GetBytes(Stream input)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                input.CopyTo(ms);
+                return ms.ToArray();
+            }
         }
 
     }

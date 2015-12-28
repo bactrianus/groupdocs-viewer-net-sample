@@ -446,9 +446,9 @@
             </summary>
             <returns>Document.</returns>
         </member>
-        <member name="T:GroupDocs.Viewer.Converter.Html.PhotoshopToHtmlConverter">
+        <member name="T:GroupDocs.Viewer.Converter.Html.ImageToHtmlBaseConverter">
             <summary>
-            Image to Image converter
+            Image to image wrapped in Html converter
             </summary>
         </member>
         <member name="T:GroupDocs.Viewer.Converter.Html.HtmlConverter">
@@ -639,9 +639,51 @@
             </summary>
             <value><c>true</c> if [only embedded resources]; otherwise, <c>false</c>.</value>
         </member>
-        <member name="F:GroupDocs.Viewer.Converter.Html.PhotoshopToHtmlConverter.HtmlPageTemplate">
+        <member name="F:GroupDocs.Viewer.Converter.Html.ImageToHtmlBaseConverter.HtmlPageTemplate">
             <summary>
             The HTML page template
+            </summary>
+        </member>
+        <member name="M:GroupDocs.Viewer.Converter.Html.ImageToHtmlBaseConverter.GetImageSrcAsBase64String">
+            <summary>
+            Gets the image source as base64 string.
+            </summary>
+            <returns>System.String.</returns>
+        </member>
+        <member name="M:GroupDocs.Viewer.Converter.Html.ImageToHtmlBaseConverter.GetImageSrcAsResource">
+            <summary>
+            Gets the image source as resource.
+            </summary>
+            <returns>System.String.</returns>
+        </member>
+        <member name="M:GroupDocs.Viewer.Converter.Html.ImageToHtmlBaseConverter.#ctor(GroupDocs.Viewer.Domain.Requests.ConvertRequest)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GroupDocs.Viewer.Converter.Html.ImageToHtmlBaseConverter"/> class.
+            </summary>
+            <param name="request">The request.</param>
+        </member>
+        <member name="M:GroupDocs.Viewer.Converter.Html.ImageToHtmlBaseConverter.GetDocumentPageCount">
+            <summary>
+            Gets the document page count.
+            </summary>
+            <returns>Count pages of image document</returns>
+        </member>
+        <member name="M:GroupDocs.Viewer.Converter.Html.ImageToHtmlBaseConverter.ConvertPage(GroupDocs.Foundation.Utils.Wrapper.Stream.GroupDocsOutputStream)">
+            <summary>
+            Converts the page.
+            </summary>
+            <param name="outputStream">The output stream.</param>
+            <returns>Converted image document page stream</returns>
+        </member>
+        <member name="P:GroupDocs.Viewer.Converter.Html.ImageToHtmlBaseConverter.OnlyEmbeddedResources">
+            <summary>
+            Indicates whether converter can embed resources into html or not
+            </summary>
+            <value><c>true</c> if [only embedded resources]; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="T:GroupDocs.Viewer.Converter.Html.PhotoshopToHtmlConverter">
+            <summary>
+            Image to Image converter
             </summary>
         </member>
         <member name="F:GroupDocs.Viewer.Converter.Html.PhotoshopToHtmlConverter.Document">
@@ -655,23 +697,10 @@
             </summary>
             <param name="request">The request.</param>
         </member>
-        <member name="M:GroupDocs.Viewer.Converter.Html.PhotoshopToHtmlConverter.GetDocumentPageCount">
-            <summary>
-            Gets the document page count.
-            </summary>
-            <returns>Count pages of image document</returns>
-        </member>
         <member name="M:GroupDocs.Viewer.Converter.Html.PhotoshopToHtmlConverter.EnsureDocumentIsLoaded">
             <summary>
             Loads document if it not loaded
             </summary>
-        </member>
-        <member name="M:GroupDocs.Viewer.Converter.Html.PhotoshopToHtmlConverter.ConvertPage(GroupDocs.Foundation.Utils.Wrapper.Stream.GroupDocsOutputStream)">
-            <summary>
-            Converts the page.
-            </summary>
-            <param name="outputStream">The output stream.</param>
-            <returns>Converted image document page stream</returns>
         </member>
         <member name="M:GroupDocs.Viewer.Converter.Html.PhotoshopToHtmlConverter.GetImageSrcAsBase64String">
             <summary>
@@ -685,20 +714,9 @@
             </summary>
             <returns>System.String.</returns>
         </member>
-        <member name="P:GroupDocs.Viewer.Converter.Html.PhotoshopToHtmlConverter.OnlyEmbeddedResources">
-            <summary>
-            Indicates whether converter can embed resources into html or not
-            </summary>
-            <value><c>true</c> if [only embedded resources]; otherwise, <c>false</c>.</value>
-        </member>
         <member name="T:GroupDocs.Viewer.Converter.Html.AutoCadToHtmlConverter">
             <summary>
             Image to Image converter
-            </summary>
-        </member>
-        <member name="F:GroupDocs.Viewer.Converter.Html.AutoCadToHtmlConverter.HtmlPageTemplate">
-            <summary>
-            The HTML page template
             </summary>
         </member>
         <member name="F:GroupDocs.Viewer.Converter.Html.AutoCadToHtmlConverter.Document">
@@ -712,23 +730,10 @@
             </summary>
             <param name="request">The request.</param>
         </member>
-        <member name="M:GroupDocs.Viewer.Converter.Html.AutoCadToHtmlConverter.GetDocumentPageCount">
-            <summary>
-            Gets the document page count.
-            </summary>
-            <returns>Count pages of image document</returns>
-        </member>
         <member name="M:GroupDocs.Viewer.Converter.Html.AutoCadToHtmlConverter.EnsureDocumentIsLoaded">
             <summary>
             Loads document if it not loaded
             </summary>
-        </member>
-        <member name="M:GroupDocs.Viewer.Converter.Html.AutoCadToHtmlConverter.ConvertPage(GroupDocs.Foundation.Utils.Wrapper.Stream.GroupDocsOutputStream)">
-            <summary>
-            Converts the page.
-            </summary>
-            <param name="outputStream">The output stream.</param>
-            <returns>Converted image document page stream</returns>
         </member>
         <member name="M:GroupDocs.Viewer.Converter.Html.AutoCadToHtmlConverter.GetImageSrcAsBase64String">
             <summary>
@@ -750,20 +755,9 @@
             <exception cref="T:GroupDocs.Viewer.Exception.FileTypeNotSupportedException">new LocaleHandler(null)</exception>
             <exception cref="T:GroupDocs.Viewer.Handler.Locale.LocaleHandler">null</exception>
         </member>
-        <member name="P:GroupDocs.Viewer.Converter.Html.AutoCadToHtmlConverter.OnlyEmbeddedResources">
-            <summary>
-            Indicates whether converter can embed resources into html or not
-            </summary>
-            <value><c>true</c> if [only embedded resources]; otherwise, <c>false</c>.</value>
-        </member>
         <member name="T:GroupDocs.Viewer.Converter.Html.TiffToHtmlConverter">
             <summary>
             Image to Image converter
-            </summary>
-        </member>
-        <member name="F:GroupDocs.Viewer.Converter.Html.TiffToHtmlConverter.HtmlPageTemplate">
-            <summary>
-            The HTML page template
             </summary>
         </member>
         <member name="F:GroupDocs.Viewer.Converter.Html.TiffToHtmlConverter.Document">
@@ -788,13 +782,6 @@
             Loads document if it not loaded
             </summary>
         </member>
-        <member name="M:GroupDocs.Viewer.Converter.Html.TiffToHtmlConverter.ConvertPage(GroupDocs.Foundation.Utils.Wrapper.Stream.GroupDocsOutputStream)">
-            <summary>
-            Converts the page.
-            </summary>
-            <param name="outputStream">The output stream.</param>
-            <returns>Converted image document page stream</returns>
-        </member>
         <member name="M:GroupDocs.Viewer.Converter.Html.TiffToHtmlConverter.GetImageSrcAsBase64String">
             <summary>
             Gets the image source as base64 string.
@@ -806,12 +793,6 @@
             Gets the image source as resource.
             </summary>
             <returns>System.String.</returns>
-        </member>
-        <member name="P:GroupDocs.Viewer.Converter.Html.TiffToHtmlConverter.OnlyEmbeddedResources">
-            <summary>
-            Indicates whether converter can embed resources into html or not
-            </summary>
-            <value><c>true</c> if [only embedded resources]; otherwise, <c>false</c>.</value>
         </member>
         <member name="T:GroupDocs.Viewer.Converter.Image.PhotoshopToImageConverter">
             <summary>
@@ -1858,11 +1839,6 @@
             Image to Image converter
             </summary>
         </member>
-        <member name="F:GroupDocs.Viewer.Converter.Html.ImageToHtmlConverter.HtmlPageTemplate">
-            <summary>
-            The HTML page template
-            </summary>
-        </member>
         <member name="F:GroupDocs.Viewer.Converter.Html.ImageToHtmlConverter.Document">
             <summary>
             The document
@@ -1874,23 +1850,10 @@
             </summary>
             <param name="request">The request.</param>
         </member>
-        <member name="M:GroupDocs.Viewer.Converter.Html.ImageToHtmlConverter.GetDocumentPageCount">
-            <summary>
-            Gets the document page count.
-            </summary>
-            <returns>Count pages of image document</returns>
-        </member>
         <member name="M:GroupDocs.Viewer.Converter.Html.ImageToHtmlConverter.EnsureDocumentIsLoaded">
             <summary>
             Loads document if it not loaded
             </summary>
-        </member>
-        <member name="M:GroupDocs.Viewer.Converter.Html.ImageToHtmlConverter.ConvertPage(GroupDocs.Foundation.Utils.Wrapper.Stream.GroupDocsOutputStream)">
-            <summary>
-            Converts the page.
-            </summary>
-            <param name="outputStream">The output stream.</param>
-            <returns>Converted image document page stream</returns>
         </member>
         <member name="M:GroupDocs.Viewer.Converter.Html.ImageToHtmlConverter.GetImageSrcAsBase64String">
             <summary>
@@ -1903,12 +1866,6 @@
             Gets the image source as resource.
             </summary>
             <returns>System.String.</returns>
-        </member>
-        <member name="P:GroupDocs.Viewer.Converter.Html.ImageToHtmlConverter.OnlyEmbeddedResources">
-            <summary>
-            Indicates whether converter can embed resources into html or not
-            </summary>
-            <value><c>true</c> if [only embedded resources]; otherwise, <c>false</c>.</value>
         </member>
         <member name="T:GroupDocs.Viewer.Converter.Html.PdfToHtmlConverter">
             <summary>
@@ -5246,6 +5203,12 @@
         <member name="P:GroupDocs.Viewer.Converter.Option.HtmlOptions.Watermark">
             <summary>
             Gets or sets the watermark.
+            </summary>
+            <value>The watermark.</value>
+        </member>
+        <member name="P:GroupDocs.Viewer.Converter.Option.HtmlOptions.HtmlResourcePrefix">
+            <summary>
+            Specifies prefix for html resource name
             </summary>
             <value>The watermark.</value>
         </member>

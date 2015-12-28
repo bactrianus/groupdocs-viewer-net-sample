@@ -29,26 +29,24 @@
             $('#viewerHtmlDiv').groupdocsViewer({
                 filePath: 'candy.pdf',
                 zoomToFitWidth: true,
-                //downloadPdfFile: true,
-                //showDownload: true,
                 showFolderBrowser: true,
                 showHeader: true,
                 showPaging: true,
-                //showPrint: true,
                 showThumbnails: true,
                 useHtmlThumbnails: true,
                 width: 650,
                 height: 900,
+                //watermarkPosition: 'Diagonal',
+                //watermarkText: 'Watermark for pdf',
                 useHtmlBasedEngine: true,
 
                 showDownload: true,
-                downloadPdfFile: true
+                downloadPdfFile: true,
 
-                //usePdfPrinting: true,
-                //showPrint: true
+                showPrint: true,
+                usePdfPrinting: true
             });
         });
-
 
         $(function () {
             $('#viewerImageDiv').groupdocsViewer({
@@ -64,10 +62,10 @@
                 useHtmlBasedEngine: false,
 
                 showDownload: true,
-                downloadPdfFile: false
+                downloadPdfFile: false,
 
-                //usePdfPrinting: false,
-                //showPrint: true
+                showPrint: true,
+                usePdfPrinting: false
             });
         });
     </script>
