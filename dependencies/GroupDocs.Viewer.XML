@@ -155,12 +155,17 @@
         </member>
         <member name="F:GroupDocs.Viewer.Constants.HTML_DIR_NAME">
             <summary>
-            Default is "html"
+            Default is "Html"
             </summary>
         </member>
         <member name="F:GroupDocs.Viewer.Constants.IMAGE_DIR_NAME">
             <summary>
-            Default is "image"
+            Default is "Image"
+            </summary>
+        </member>
+        <member name="F:GroupDocs.Viewer.Constants.PDF_DIR_NAME">
+            <summary>
+            Default is "Pdf"
             </summary>
         </member>
         <member name="F:GroupDocs.Viewer.Constants.RESOURCES_DIR_NAME">

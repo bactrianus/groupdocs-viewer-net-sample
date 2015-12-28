@@ -25,7 +25,6 @@ namespace MvcSample.Controllers
         private readonly ViewerImageHandler _imageHandler;
 
         private string _licensePath = "C:\\licenses\\GroupDocs.Viewer.lic";
-        //private string _licensePath = "D:\\vlitvinchik\\sites\\yanalitvinchik.com\\GroupDocs.Viewer.lic";
         private string _storagePath = AppDomain.CurrentDomain.GetData("DataDirectory").ToString(); // App_Data folder path
         private string _tempPath = AppDomain.CurrentDomain.GetData("DataDirectory") + "\\Temp";
         private readonly ViewerConfig _config;
@@ -387,12 +386,14 @@ namespace MvcSample.Controllers
 
         private byte[] GetBytes(Stream input)
         {
+            input.Position = 0;
+
             using (MemoryStream ms = new MemoryStream())
             {
                 input.CopyTo(ms);
                 return ms.ToArray();
             }
-        }
+        } 
 
     }
 }
