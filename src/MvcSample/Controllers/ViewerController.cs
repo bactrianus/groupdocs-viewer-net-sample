@@ -54,6 +54,8 @@ namespace MvcSample.Controllers
         [HttpPost]
         public ActionResult ViewDocument(ViewDocumentParameters request)
         {
+            var fileName = Path.GetFileName(request.Path);
+
             var result = new ViewDocumentResponse
             {
                 pageCss = new string[] { },
@@ -62,9 +64,9 @@ namespace MvcSample.Controllers
                 pdfPrintUrl = GetPdfPrintUrl(request),
                 url = GetFileUrl(request),
                 path = request.Path,
-                name = Path.GetFileName(request.Path)
+                name = fileName
             };
-
+            
             if (request.UseHtmlBasedEngine)
             {
                 var docInfo = _htmlHandler.GetDocumentInfo(new GetDocumentInfoRequest(request.Path));
@@ -73,7 +75,7 @@ namespace MvcSample.Controllers
                 result.fileType = docInfo.DocumentFileType;
 
                 var htmlOptions = new HtmlOptions { IsResourcesEmbedded = true, Watermark = GetWatermark(request) };
-                var htmlPages = _htmlHandler.GetPages(new FileDescription { Guid = request.Path, Name = request.Path }, htmlOptions);
+                var htmlPages = _htmlHandler.GetPages(new FileDescription { Guid = request.Path, Name = fileName }, htmlOptions);
                 result.pageHtml = htmlPages.Select(_ => _.HtmlContent).ToArray();
 
                 //NOTE: Fix for incomplete cells document
@@ -93,7 +95,7 @@ namespace MvcSample.Controllers
                 result.fileType = docInfo.DocumentFileType;
 
                 var imageOptions = new ImageOptions { Watermark = GetWatermark(request) };
-                var imagePages = _imageHandler.GetPages(new FileDescription { Guid = request.Path, Name = request.Path }, imageOptions);
+                var imagePages = _imageHandler.GetPages(new FileDescription { Guid = request.Path, Name = fileName }, imageOptions);
 
                 // Provide images urls
                 var urls = new List<string>();
@@ -131,13 +133,17 @@ namespace MvcSample.Controllers
 
         public ActionResult LoadFileBrowserTreeData(LoadFileBrowserTreeDataParameters parameters)
         {
-            var request = new LoadFileBrowserTreeRequest { Path = _storagePath };
+            var path = _storagePath;
+            if (!string.IsNullOrEmpty(parameters.Path))
+                path = Path.Combine(path, parameters.Path);
+
+            var request = new LoadFileBrowserTreeRequest { Path = path };
 
             var tree = _htmlHandler.LoadFileBrowserTreeData(request);
 
             var data = new FileBrowserTreeDataResponse
             {
-                nodes = ToFileTreeNodes(tree.Nodes).ToArray(),
+                nodes = ToFileTreeNodes(parameters.Path, tree.Nodes).ToArray(),
                 count = tree.Nodes.Count
             };
 
@@ -301,23 +307,22 @@ namespace MvcSample.Controllers
             }
         }
 
-        private List<FileBrowserTreeNode> ToFileTreeNodes(IEnumerable<BrowserTreeNode> nodes)
+        private List<FileBrowserTreeNode> ToFileTreeNodes(string path, IEnumerable<BrowserTreeNode> nodes)
         {
             return nodes.Select(_ =>
                 new FileBrowserTreeNode
                 {
-                    path = _.Name,
-                    docType = _.DocumentType,
-                    fileType = _.FileType,
+                    path = string.IsNullOrEmpty(path) ? _.Name : string.Format("{0}/{1}", path, _.Name),
+                    docType = string.IsNullOrEmpty(_.DocumentType) ? _.DocumentType : _.DocumentType.ToLower(),
+                    fileType = string.IsNullOrEmpty(_.FileType) ? _.FileType : _.FileType.ToLower(),
                     name = _.Name,
                     size = _.Size,
                     modifyTime = (long)(_.DateModified - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds,
                     type = _.Type,
-                    nodes = ToFileTreeNodes(_.Nodes)
+                    nodes = ToFileTreeNodes(path, _.Nodes)
                 })
                 .ToList();
         }
-
 
         private string GetFileUrl(ViewDocumentParameters request)
         {
@@ -394,6 +399,5 @@ namespace MvcSample.Controllers
                 return ms.ToArray();
             }
         } 
-
     }
 }
