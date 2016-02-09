@@ -1,9 +1,9 @@
+using GroupDocs.Viewer.Converter.Options;
+using GroupDocs.Viewer.Domain;
 using System;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using GroupDocs.Viewer.Converter.Option;
-using GroupDocs.Viewer.Domain;
 
 namespace MvcSample.Controllers
 {
@@ -71,7 +71,7 @@ namespace MvcSample.Controllers
             {
                 PageData pageData = _fileData.Pages[i];
 
-                bool needSeparator = pageData.Number != 1;
+                bool needSeparator = pageData.Number >= 1;
                 if (needSeparator)
                     json.Append(",");
 
@@ -114,7 +114,7 @@ namespace MvcSample.Controllers
             {
                 PageData pageData = _fileData.Pages[i];
 
-                bool needSeparator = pageData.Number != 1;
+                bool needSeparator = pageData.Number >= 1;
                 if (needSeparator)
                     json.Append(",");
 
@@ -145,7 +145,7 @@ namespace MvcSample.Controllers
             {
                 PageData pageData = wordsFileData.Pages[i];
 
-                bool needSeparator = pageData.Number != 1;
+                bool needSeparator = pageData.Number >= 1;
                 if (needSeparator)
                     json.Append(",");
 
@@ -155,7 +155,7 @@ namespace MvcSample.Controllers
             }
             json.Append("]"); // pages
 
-            bool includeContentControls = _options.IncludeContentControls && wordsFileData.ContentControls.Count > 0;
+            bool includeContentControls = _options.UsePdf && wordsFileData.ContentControls.Count > 0;
             if (includeContentControls)
             {
                 json.Append(", \"contentControls\":[");
