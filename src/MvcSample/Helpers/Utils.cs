@@ -1,8 +1,14 @@
-﻿using System;
+﻿using GroupDocs.Viewer.Domain;
+using GroupDocs.Viewer.Domain.Html;
+using MvcSample.Models;
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
+using WatermarkPosition = MvcSample.Models.WatermarkPosition;
 
 namespace MvcSample.Helpers
 {
@@ -153,6 +159,112 @@ namespace MvcSample.Helpers
             filename = filename.Replace("__", "_");
 
             return filename;
+        }
+
+        public static string GetImageMimeTypeFromFilename(string filename)
+        {
+            string fileExtension = Path.GetExtension(filename);
+            if (!String.IsNullOrWhiteSpace(fileExtension) && fileExtension.StartsWith("."))
+                fileExtension = fileExtension.Remove(0, 1);
+            string mimeType;
+            switch (fileExtension)
+            {
+                case "svg":
+                    mimeType = "image/svg+xml";
+                    break;
+                case "css":
+                    mimeType = "text/css";
+                    break;
+                case "woff":
+                    mimeType = "application/font-woff";
+                    break;
+                case "htm":
+                    mimeType = "text/html";
+                    break;
+                default:
+                    mimeType = String.Format("image/{0}", fileExtension);
+                    break;
+            }
+            return mimeType;
+        }
+
+        public static HtmlResourceType GetResourceType(string resourceName)
+        {
+            string fileExtension = Path.GetExtension(resourceName);
+            if (!String.IsNullOrWhiteSpace(fileExtension) && fileExtension.StartsWith("."))
+                fileExtension = fileExtension.Remove(0, 1);
+
+            switch (fileExtension)
+            {
+                case "svg":
+                    return HtmlResourceType.Image;
+                case "css":
+                    return HtmlResourceType.Style;
+                case "woff":
+                    return HtmlResourceType.Font;
+                default:
+                    return HtmlResourceType.Image;
+            }
+        }
+
+        public static List<FileBrowserTreeNode> ToFileTreeNodes(string path, IEnumerable<FileDescription> nodes)
+        {
+            return nodes.Select(_ =>
+                new FileBrowserTreeNode
+                {
+                    path = string.IsNullOrEmpty(path) ? _.Name : string.Format("{0}/{1}", path, _.Name),
+                    docType = string.IsNullOrEmpty(_.DocumentType) ? _.DocumentType : _.DocumentType.ToLower(),
+                    fileType = string.IsNullOrEmpty(_.FileType) ? _.FileType : _.FileType.ToLower(),
+                    name = _.Name,
+                    size = _.Size,
+                    modifyTime =
+                        (long)
+                            (_.LastModificationDate - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc))
+                                .TotalMilliseconds,
+                    type = _.Name.Contains(".") ? "file" : "folder"
+                })
+                .ToList();
+        }
+
+        public static Watermark GetWatermark(string watermarkText, int? watermarkColor, WatermarkPosition? watermarkPosition, float? watermarkWidth)
+        {
+            if (string.IsNullOrWhiteSpace(watermarkText))
+                return null;
+
+            return new Watermark(watermarkText)
+            {
+                Color = watermarkColor.HasValue
+                    ? Color.FromArgb(watermarkColor.Value)
+                    : Color.Red,
+                Position = ToWatermarkPosition(watermarkPosition),
+                Width = watermarkWidth
+            };
+        }
+
+        private static GroupDocs.Viewer.Domain.WatermarkPosition? ToWatermarkPosition(WatermarkPosition? watermarkPosition)
+        {
+            if (!watermarkPosition.HasValue)
+                return GroupDocs.Viewer.Domain.WatermarkPosition.Diagonal;
+
+            switch (watermarkPosition.Value)
+            {
+                case WatermarkPosition.Diagonal:
+                    return GroupDocs.Viewer.Domain.WatermarkPosition.Diagonal;
+                case WatermarkPosition.TopLeft:
+                    return GroupDocs.Viewer.Domain.WatermarkPosition.TopLeft;
+                case WatermarkPosition.TopCenter:
+                    return GroupDocs.Viewer.Domain.WatermarkPosition.TopCenter;
+                case WatermarkPosition.TopRight:
+                    return GroupDocs.Viewer.Domain.WatermarkPosition.TopRight;
+                case WatermarkPosition.BottomLeft:
+                    return GroupDocs.Viewer.Domain.WatermarkPosition.BottomLeft;
+                case WatermarkPosition.BottomCenter:
+                    return GroupDocs.Viewer.Domain.WatermarkPosition.BottomCenter;
+                case WatermarkPosition.BottomRight:
+                    return GroupDocs.Viewer.Domain.WatermarkPosition.BottomRight;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }

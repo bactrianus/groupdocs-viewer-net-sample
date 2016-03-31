@@ -128,8 +128,10 @@
     <Compile Include="Helpers\InterProcessLock.cs" />
     <Compile Include="Helpers\Utils.cs" />
     <Compile Include="Models\FileBrowserTreeDataResponse.cs" />
+    <Compile Include="Models\GetDocumentPageHtmlParameters.cs" />
     <Compile Include="Models\GetFileParameters.cs" />
     <Compile Include="Models\GetImageUrlsParameters.cs" />
+    <Compile Include="Models\GetResourceForHtmlParameters.cs" />
     <Compile Include="Models\ViewDocumentParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
