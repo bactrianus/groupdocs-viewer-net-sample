@@ -42,7 +42,7 @@
   <ItemGroup>
     <Reference Include="GroupDocs.Viewer, Version=3.0.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Users\gena\Downloads\GroupDocs.Viewer_3.0.0-NET\bin\GroupDocs.Viewer.dll</HintPath>
+      <HintPath>C:\Users\gena\Downloads\GroupDocs.Viewer_3.1.0-NET\bin\GroupDocs.Viewer.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
@@ -125,6 +125,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\InterProcessLock.cs" />
+    <Compile Include="Helpers\Utils.cs" />
     <Compile Include="Models\FileBrowserTreeDataResponse.cs" />
     <Compile Include="Models\GetFileParameters.cs" />
     <Compile Include="Models\GetImageUrlsParameters.cs" />

@@ -12,12 +12,10 @@
      </tr>
     <tr>
         <td>
-           
             <div id="viewerHtmlDiv"></div>
         </td>
         <td style="width:30px"></td>
         <td>
-            
             <div id="viewerImageDiv"></div>
         </td>
     </tr>
@@ -27,7 +25,11 @@
     <script>
         $(function () {
             $('#viewerHtmlDiv').groupdocsViewer({
-                filePath: 'candy.pdf',
+                //filePath: 'candy.pdf',
+                filePath: 'http://groupdocs.com/images/banner/carousel2/signature.png',
+                //filePath: 'http://www.acm.org/sigs/publications/pubform.doc',
+                //filePath: 'http://www2.ensc.sfu.ca/grad/theses/tips/Effective_presentation.ppt',
+                //filePath: 'http://www.econ.yale.edu/~shiller/data/ie_data.xls',
                 zoomToFitWidth: true,
                 showFolderBrowser: true,
                 showHeader: true,
@@ -39,10 +41,8 @@
                 //watermarkPosition: 'Diagonal',
                 //watermarkText: 'Watermark for pdf',
                 useHtmlBasedEngine: true,
-
                 showDownload: true,
                 downloadPdfFile: true,
-
                 showPrint: true,
                 usePdfPrinting: true
             });
@@ -50,7 +50,8 @@
 
         $(function () {
             $('#viewerImageDiv').groupdocsViewer({
-                filePath: 'demo.docx',
+                //filePath: 'demo.docx',
+                filePath: 'http://www2.ensc.sfu.ca/grad/theses/tips/Effective_presentation.ppt',
                 zoomToFitWidth: true,
                 showFolderBrowser: true,
                 showHeader: true,
@@ -60,10 +61,8 @@
                 watermarkPosition: 'Diagonal',
                 watermarkText: 'Watermark for image',
                 useHtmlBasedEngine: false,
-
                 showDownload: true,
                 downloadPdfFile: false,
-
                 showPrint: true,
                 usePdfPrinting: false
             });
