@@ -144,7 +144,7 @@ namespace MvcSample.Helpers
             return resultPath;
         }
 
-        public static string GetFilenameFromString(string name)
+        public static string GetFilenameFromUrl(string name)
         {
             string filename = Regex.Replace(name, @"[\:\/\?\&\%\=\#]", "_");
 

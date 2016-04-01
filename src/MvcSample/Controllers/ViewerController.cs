@@ -29,6 +29,9 @@ namespace MvcSample.Controllers
         private readonly string _storagePath = AppDomain.CurrentDomain.GetData("DataDirectory").ToString();
         private readonly string _tempPath = AppDomain.CurrentDomain.GetData("DataDirectory") + "\\Temp";
 
+        private readonly Dictionary<string, Stream> _streams = new Dictionary<string, Stream>();
+
+
         public ViewerController()
         {
             var config = new ViewerConfig
@@ -40,6 +43,9 @@ namespace MvcSample.Controllers
 
             _htmlHandler = new ViewerHtmlHandler(config);
             _imageHandler = new ViewerImageHandler(config);
+
+            _streams.Add("ProcessFileFromStreamExample_1.pdf", HttpWebRequest.Create("http://unfccc.int/resource/docs/convkp/kpeng.pdf").GetResponse().GetResponseStream());
+            _streams.Add("ProcessFileFromStreamExample_2.doc", HttpWebRequest.Create("http://www.acm.org/sigs/publications/pubform.doc").GetResponse().GetResponseStream());
         }
 
         // GET: /Viewer/
@@ -52,7 +58,9 @@ namespace MvcSample.Controllers
         public ActionResult ViewDocument(ViewDocumentParameters request)
         {
             if (Utils.IsValidUrl(request.Path))
-                PrepareUrl(request);
+                request.Path = DownloadToStorage(request.Path);
+            else if (_streams.ContainsKey(request.Path))
+                request.Path = SaveStreamToStorage(request.Path);
 
             var fileName = Path.GetFileName(request.Path);
 
@@ -104,6 +112,13 @@ namespace MvcSample.Controllers
             }
 
             var imageOptions = new ImageOptions();
+            if (parameters.Quality.HasValue)
+            {
+                // NOTE: imageOptions.JpegQuality available since 3.2.0 version
+                //imageOptions.JpegQuality = parameters.Quality.Value;
+                //imageOptions.ConvertImageFileType = ConvertImageFileType.JPG;
+            }
+
             var imagePages = _imageHandler.GetPages(parameters.Path, imageOptions);
 
             // Save images some where and provide urls
@@ -112,10 +127,13 @@ namespace MvcSample.Controllers
 
             foreach (var pageImage in imagePages)
             {
-                var docFoldePath = Path.Combine(tempFolderPath, parameters.Path);
+                var docFoldePath = Path.Combine(tempFolderPath, Path.GetFileName(parameters.Path));
 
-                if (!Directory.Exists(docFoldePath))
-                    Directory.CreateDirectory(docFoldePath);
+                using (new InterProcessLock(docFoldePath))
+                {
+                    if (!Directory.Exists(docFoldePath))
+                        Directory.CreateDirectory(docFoldePath);
+                }
 
                 var pageImageName = string.Format("{0}\\{1}.png", docFoldePath, pageImage.PageNumber);
 
@@ -127,7 +145,7 @@ namespace MvcSample.Controllers
                 }
 
                 var baseUrl = Request.Url.Scheme + "://" + Request.Url.Authority + Request.ApplicationPath.TrimEnd('/') +
-                              "/";
+                                "/";
                 urls.Add(string.Format("{0}Content/TempStorage/{1}/{2}.png", baseUrl, parameters.Path,
                     pageImage.PageNumber));
             }
@@ -258,7 +276,7 @@ namespace MvcSample.Controllers
         public ActionResult GetDocumentPageHtml(GetDocumentPageHtmlParameters parameters)
         {
             if (Utils.IsValidUrl(parameters.Path))
-                parameters.Path = Utils.GetFilenameFromString(parameters.Path);
+                parameters.Path = Utils.GetFilenameFromUrl(parameters.Path);
 
             if (String.IsNullOrWhiteSpace(parameters.Path))
                 throw new ArgumentException("A document path must be specified", "path");
@@ -338,15 +356,29 @@ namespace MvcSample.Controllers
             return Content(serializedData, "application/json");
         }
 
-        private void PrepareUrl(ViewDocumentParameters request)
+        private string DownloadToStorage(string url)
         {
-            var fileNameFromUrl = Utils.GetFilenameFromString(request.Path);
+            var fileNameFromUrl = Utils.GetFilenameFromUrl(url);
             var filePath = Path.Combine(_storagePath, fileNameFromUrl);
 
             using (new InterProcessLock(filePath))
-                Utils.DownloadFile(request.Path, filePath);
+                Utils.DownloadFile(url, filePath);
 
-            request.Path = fileNameFromUrl;
+            return fileNameFromUrl;
+        }
+
+        private string SaveStreamToStorage(string key)
+        {
+            var stream = _streams[key];
+            var savePath = Path.Combine(_storagePath, key);
+            using (var fileStream = System.IO.File.Create(savePath))
+            {
+                if (stream.CanSeek)
+                    stream.Seek(0, SeekOrigin.Begin);
+                stream.CopyTo(fileStream);
+            }
+
+            return savePath;
         }
 
         private void ViewDocumentAsImage(ViewDocumentParameters request, ViewDocumentResponse result, string fileName)
@@ -385,6 +417,11 @@ namespace MvcSample.Controllers
             {
                 Watermark = Utils.GetWatermark(request.WatermarkText, request.WatermarkColor, request.WatermarkPosition, request.WatermarkWidth)
             };
+
+            // NOTE: imageOptions.JpegQuality available since 3.2.0 version
+            //if (request.Quality.HasValue)
+            //    imageOptions.JpegQuality = request.Quality.Value;
+
             var imagePages = _imageHandler.GetPages(fileName, imageOptions);
 
             // Provide images urls
@@ -395,10 +432,14 @@ namespace MvcSample.Controllers
 
             foreach (var pageImage in imagePages)
             {
-                var docFoldePath = Path.Combine(tempFolderPath, request.Path);
+                var docFoldePath = Path.Combine(tempFolderPath, Path.GetFileName(request.Path));
 
-                if (!Directory.Exists(docFoldePath))
-                    Directory.CreateDirectory(docFoldePath);
+                using (new InterProcessLock(docFoldePath))
+                {
+                    if (!Directory.Exists(docFoldePath))
+                        Directory.CreateDirectory(docFoldePath);
+                }
+
 
                 var pageImageName = string.Format("{0}\\{1}.png", docFoldePath, pageImage.PageNumber);
 
@@ -410,7 +451,7 @@ namespace MvcSample.Controllers
                 }
 
                 var baseUrl = Request.Url.Scheme + "://" + Request.Url.Authority +
-                              Request.ApplicationPath.TrimEnd('/') + "/";
+                                Request.ApplicationPath.TrimEnd('/') + "/";
                 urls.Add(string.Format("{0}Content/TempStorage/{1}/{2}.png", baseUrl, request.Path,
                     pageImage.PageNumber));
             }
