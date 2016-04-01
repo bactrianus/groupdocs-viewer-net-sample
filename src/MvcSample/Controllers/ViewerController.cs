@@ -35,7 +35,7 @@ namespace MvcSample.Controllers
             {
                 StoragePath = _storagePath,
                 TempPath = _tempPath,
-                UseCache = true
+                UseCache = false
             };
 
             _htmlHandler = new ViewerHtmlHandler(config);
@@ -277,8 +277,8 @@ namespace MvcSample.Controllers
 
             var htmlPages = GetHtmlPages(parameters.Path, htmlOptions, out cssList);
 
-            var pageHtml = htmlPages[0].HtmlContent;
-            var pageCss = cssList[0];
+            var pageHtml = htmlPages.Count > 0 ? htmlPages[0].HtmlContent : null;
+            var pageCss = cssList.Count > 0 ? cssList[0] : null;
 
             var result = new { pageHtml, pageCss };
             return ToJsonResult(result);
