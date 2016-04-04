@@ -1,9 +1,9 @@
-using GroupDocs.Viewer.Converter.Options;
 using GroupDocs.Viewer.Domain;
 using System;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using GroupDocs.Viewer.Converter.Options;
 
 namespace MvcSample.Controllers
 {
@@ -71,7 +71,7 @@ namespace MvcSample.Controllers
             {
                 PageData pageData = _fileData.Pages[i];
 
-                bool needSeparator = pageData.Number >= 1;
+                bool needSeparator = i > 0;
                 if (needSeparator)
                     json.Append(",");
 
@@ -186,7 +186,7 @@ namespace MvcSample.Controllers
             json.Append(string.Format("{{\"w\":{0},\"h\":{1},\"number\":{2}",
                 pageData.Width.ToString(_defaultCulture),
                 pageData.Height.ToString(_defaultCulture),
-                pageData.Number.ToString(_defaultCulture)));
+                (pageData.Number - 1).ToString(_defaultCulture)));
         }
 
         /// <summary>

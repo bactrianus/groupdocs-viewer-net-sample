@@ -384,30 +384,26 @@ namespace MvcSample.Controllers
         private void ViewDocumentAsImage(ViewDocumentParameters request, ViewDocumentResponse result, string fileName)
         {
             var docInfo = _imageHandler.GetDocumentInfo(new DocumentInfoOptions(request.Path));
+
+            var maxWidth = 0;
+            var maxHeight = 0;
+            foreach (var pageData in docInfo.Pages)
+            {
+                if (pageData.Height > maxHeight)
+                {
+                    maxHeight = pageData.Height;
+                    maxWidth = pageData.Width;
+                }
+            }
             var fileData = new FileData
             {
                 DateCreated = DateTime.Now,
                 DateModified = docInfo.LastModificationDate,
                 PageCount = docInfo.Pages.Count,
-                Pages = new List<PageData>(),
-                MaxHeight = 900,
-                MaxWidth = 600
+                Pages = docInfo.Pages,
+                MaxWidth = maxWidth,
+                MaxHeight = maxHeight
             };
-
-            for (var i = 0; i < docInfo.Pages.Count; i++)
-            {
-                var page = new PageData
-                {
-                    Angle = 0,
-                    Height = 900,
-                    Number = i,
-                    //Name = "page" + i,
-                    Rows = new List<RowData>(),
-                    Width = 600
-                };
-
-                fileData.Pages.Add(page);
-            }
 
             result.documentDescription = new FileDataJsonSerializer(fileData, new FileDataOptions()).Serialize(true);
             result.docType = docInfo.DocumentType;
@@ -462,30 +458,26 @@ namespace MvcSample.Controllers
         private void ViewDocumentAsHtml(ViewDocumentParameters request, ViewDocumentResponse result, string fileName)
         {
             var docInfo = _htmlHandler.GetDocumentInfo(new DocumentInfoOptions(request.Path));
+
+            var maxWidth = 0;
+            var maxHeight = 0;
+            foreach (var pageData in docInfo.Pages)
+            {
+                if (pageData.Height > maxHeight)
+                {
+                    maxHeight = pageData.Height;
+                    maxWidth = pageData.Width;
+                }
+            }
             var fileData = new FileData
             {
                 DateCreated = DateTime.Now,
                 DateModified = docInfo.LastModificationDate,
                 PageCount = docInfo.Pages.Count,
-                Pages = new List<PageData>(),
-                MaxHeight = 900,
-                MaxWidth = 600
+                Pages = docInfo.Pages,
+                MaxWidth = maxWidth,
+                MaxHeight = maxHeight
             };
-
-            for (var i = 0; i < docInfo.Pages.Count; i++)
-            {
-                var page = new PageData
-                {
-                    Angle = 0,
-                    Height = 900,
-                    Number = i,
-                    //Name = "page" + i,
-                    Rows = new List<RowData>(),
-                    Width = 600
-                };
-
-                fileData.Pages.Add(page);
-            }
 
             result.documentDescription = new FileDataJsonSerializer(fileData, new FileDataOptions()).Serialize(false);
             result.docType = docInfo.DocumentType;
