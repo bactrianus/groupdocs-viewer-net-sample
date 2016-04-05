@@ -303,7 +303,7 @@ namespace MvcSample.Controllers
             var htmlPages = GetHtmlPages(parameters.Path, htmlOptions, out cssList);
 
             var pageHtml = htmlPages.Count > 0 ? htmlPages[0].HtmlContent : null;
-            var pageCss = cssList.Count > 0 ? cssList[0] : null;
+            var pageCss = cssList.Count > 0 ? new[] { string.Join(" ", cssList) } : null;
 
             var result = new { pageHtml, pageCss };
             return ToJsonResult(result);
