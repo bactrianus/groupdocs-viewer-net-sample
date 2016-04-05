@@ -175,6 +175,7 @@
     <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\fonts\PT_Sans-Web-Regular.woff" />
     <None Include="Properties\PublishProfiles\k2.pubxml" />
   </ItemGroup>
   <ItemGroup>

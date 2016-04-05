@@ -31,18 +31,24 @@ namespace MvcSample.Controllers
 
         private readonly Dictionary<string, Stream> _streams = new Dictionary<string, Stream>();
 
-
         public ViewerController()
         {
-            var config = new ViewerConfig
+            var htmlConfig = new ViewerConfig
             {
                 StoragePath = _storagePath,
                 TempPath = _tempPath,
-                UseCache = false
+                UseCache = true
             };
 
-            _htmlHandler = new ViewerHtmlHandler(config);
-            _imageHandler = new ViewerImageHandler(config);
+            var imageConfig = new ViewerConfig
+            {
+                StoragePath = _storagePath,
+                TempPath = _tempPath,
+                UseCache = true
+            };
+
+            _htmlHandler = new ViewerHtmlHandler(htmlConfig);
+            _imageHandler = new ViewerImageHandler(imageConfig);
 
             _streams.Add("ProcessFileFromStreamExample_1.pdf", HttpWebRequest.Create("http://unfccc.int/resource/docs/convkp/kpeng.pdf").GetResponse().GetResponseStream());
             _streams.Add("ProcessFileFromStreamExample_2.doc", HttpWebRequest.Create("http://www.acm.org/sigs/publications/pubform.doc").GetResponse().GetResponseStream());
@@ -304,6 +310,8 @@ namespace MvcSample.Controllers
 
         public ActionResult GetResourceForHtml(GetResourceForHtmlParameters parameters)
         {
+            parameters.ResourceName = parameters.ResourceName.Replace("/", "");
+
             var resource = new HtmlResource
             {
                 ResourceName = parameters.ResourceName,
@@ -340,9 +348,10 @@ namespace MvcSample.Controllers
                 {
                     var cssStream = _htmlHandler.GetResource(filePath, resource);
                     var text = new StreamReader(cssStream).ReadToEnd();
-                    text = text.Replace("url(\"",
-                        string.Format("url(\"/document-viewer/GetResourceForHtml?documentPath={0}&pageNumber={1}&resourceName=",
+                    text = text.Replace("url('",
+                        string.Format("url('/document-viewer/GetResourceForHtml?documentPath={0}&pageNumber={1}&resourceName=",
                         filePath, page.PageNumber));
+
                     cssList.Add(text);
                 }
             }
@@ -500,7 +509,7 @@ namespace MvcSample.Controllers
             List<string> cssList;
             var htmlPages = GetHtmlPages(fileName, htmlOptions, out cssList);
             result.pageHtml = htmlPages.Select(_ => _.HtmlContent).ToArray();
-            result.pageCss = cssList.ToArray();
+            result.pageCss =  new[] {string.Join(" ", cssList)};
 
             //NOTE: Fix for incomplete cells document
             for (var i = 0; i < result.pageHtml.Length; i++)
