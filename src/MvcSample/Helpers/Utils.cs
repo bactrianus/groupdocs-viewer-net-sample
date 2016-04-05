@@ -207,6 +207,34 @@ namespace MvcSample.Helpers
             }
         }
 
+        public static bool IsImage(string resourceName)
+        {
+            string fileExtension = Path.GetExtension(resourceName);
+            if (!String.IsNullOrWhiteSpace(fileExtension) && fileExtension.StartsWith("."))
+                fileExtension = fileExtension.Remove(0, 1);
+
+            if (string.IsNullOrEmpty(fileExtension))
+                return false;
+
+            switch (fileExtension.ToLower())
+            {
+                case "svg":
+                    return true;
+                case "png":
+                    return true;
+                case "jpg":
+                    return true;
+                case "jpeg":
+                    return true;
+                case "bmp":
+                    return true;
+                case "ico":
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         public static List<FileBrowserTreeNode> ToFileTreeNodes(string path, IEnumerable<FileDescription> nodes)
         {
             return nodes.Select(_ =>
