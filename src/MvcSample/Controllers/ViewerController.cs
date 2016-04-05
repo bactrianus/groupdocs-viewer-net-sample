@@ -34,15 +34,23 @@ namespace MvcSample.Controllers
 
         public ViewerController()
         {
-            var config = new ViewerConfig
+            var htmlConfig = new ViewerConfig
             {
                 StoragePath = _storagePath,
                 TempPath = _tempPath,
-                UseCache = false
+                UseCache = true
             };
 
-            _htmlHandler = new ViewerHtmlHandler(config);
-            _imageHandler = new ViewerImageHandler(config);
+            _htmlHandler = new ViewerHtmlHandler(htmlConfig);
+
+
+            var imageConfig = new ViewerConfig
+            {
+                StoragePath = _storagePath,
+                TempPath = _tempPath,
+                UseCache = true
+            };
+            _imageHandler = new ViewerImageHandler(imageConfig);
 
             _streams.Add("ProcessFileFromStreamExample_1.pdf", HttpWebRequest.Create("http://unfccc.int/resource/docs/convkp/kpeng.pdf").GetResponse().GetResponseStream());
             _streams.Add("ProcessFileFromStreamExample_2.doc", HttpWebRequest.Create("http://www.acm.org/sigs/publications/pubform.doc").GetResponse().GetResponseStream());
@@ -304,6 +312,10 @@ namespace MvcSample.Controllers
 
         public ActionResult GetResourceForHtml(GetResourceForHtmlParameters parameters)
         {
+            if (!string.IsNullOrEmpty(parameters.ResourceName) &&
+                parameters.ResourceName.IndexOf("/", StringComparison.Ordinal) >= 0)
+                parameters.ResourceName = parameters.ResourceName.Replace("/", "");
+
             var resource = new HtmlResource
             {
                 ResourceName = parameters.ResourceName,
@@ -340,10 +352,33 @@ namespace MvcSample.Controllers
                 {
                     var cssStream = _htmlHandler.GetResource(filePath, resource);
                     var text = new StreamReader(cssStream).ReadToEnd();
-                    text = text.Replace("url(\"",
+
+                    var needResave = false;
+                    if (text.IndexOf("url(\"", StringComparison.Ordinal) >= 0)
+                    {
+                        needResave = true;
+                        text = text.Replace("url(\"",
                         string.Format("url(\"/document-viewer/GetResourceForHtml?documentPath={0}&pageNumber={1}&resourceName=",
                         filePath, page.PageNumber));
+                    }
+
+                    if (text.IndexOf("url('", StringComparison.Ordinal) >= 0)
+                    {
+                        needResave = true;
+                        text = text.Replace("url('",
+                            string.Format(
+                                "url('/document-viewer/GetResourceForHtml?documentPath={0}&pageNumber={1}&resourceName=",
+                                filePath, page.PageNumber));
+                    }
                     cssList.Add(text);
+
+                    if (needResave)
+                    {
+                        var fullPath = Path.Combine(_tempPath, filePath, "html", "resources",
+                            string.Format("page{0}", page.PageNumber), resource.ResourceName);
+
+                        System.IO.File.WriteAllText(fullPath, text);
+                    }
                 }
             }
             return htmlPages;
@@ -371,14 +406,18 @@ namespace MvcSample.Controllers
         {
             var stream = _streams[key];
             var savePath = Path.Combine(_storagePath, key);
-            using (var fileStream = System.IO.File.Create(savePath))
-            {
-                if (stream.CanSeek)
-                    stream.Seek(0, SeekOrigin.Begin);
-                stream.CopyTo(fileStream);
-            }
 
-            return savePath;
+            using (new InterProcessLock(savePath))
+            {
+                using (var fileStream = System.IO.File.Create(savePath))
+                {
+                    if (stream.CanSeek)
+                        stream.Seek(0, SeekOrigin.Begin);
+                    stream.CopyTo(fileStream);
+                }
+
+                return savePath;
+            }
         }
 
         private void ViewDocumentAsImage(ViewDocumentParameters request, ViewDocumentResponse result, string fileName)

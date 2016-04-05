@@ -143,6 +143,9 @@
     <Content Include="Content\CSS\bootstrap.css" />
     <Content Include="Content\CSS\dialog.css" />
     <Content Include="Content\CSS\groupdocsViewer.all.css" />
+    <Content Include="Content\fonts\gochihand-regular-webfont.svg" />
+    <Content Include="Content\fonts\pt_sans-web-bold-webfont.svg" />
+    <Content Include="Content\fonts\pt_sans-web-regular-webfont.svg" />
     <Content Include="Content\Images\bg-trial.png" />
     <Content Include="Content\Images\mainbg.png" />
     <Content Include="Content\Images\spinner.gif" />
@@ -175,6 +178,22 @@
     <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\fonts\gochihand-regular-webfont.eot" />
+    <Content Include="Content\fonts\gochihand-regular-webfont.ttf" />
+    <Content Include="Content\fonts\gochihand-regular-webfont.woff" />
+    <Content Include="Content\fonts\GochiHand-Regular.ttf" />
+    <Content Include="Content\fonts\Magra-Bold.ttf" />
+    <Content Include="Content\fonts\Magra-Regular.ttf" />
+    <Content Include="Content\fonts\pt_sans-web-bold-webfont.eot" />
+    <Content Include="Content\fonts\pt_sans-web-bold-webfont.ttf" />
+    <Content Include="Content\fonts\pt_sans-web-bold-webfont.woff" />
+    <Content Include="Content\fonts\PT_Sans-Web-Bold.eot" />
+    <Content Include="Content\fonts\pt_sans-web-regular-webfont.eot" />
+    <Content Include="Content\fonts\pt_sans-web-regular-webfont.ttf" />
+    <Content Include="Content\fonts\pt_sans-web-regular-webfont.woff" />
+    <Content Include="Content\fonts\PT_Sans-Web-Regular.eot" />
+    <Content Include="Content\fonts\PT_Sans-Web-Regular.ttf" />
+    <Content Include="Content\fonts\PT_Sans-Web-Regular.woff" />
     <None Include="Properties\PublishProfiles\k2.pubxml" />
   </ItemGroup>
   <ItemGroup>
