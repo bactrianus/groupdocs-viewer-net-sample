@@ -1,4 +1,4 @@
-﻿using GroupDocs.Viewer.Config;
+using GroupDocs.Viewer.Config;
 using GroupDocs.Viewer.Converter.Options;
 using GroupDocs.Viewer.Domain;
 using GroupDocs.Viewer.Domain.Html;
@@ -31,7 +31,6 @@ namespace MvcSample.Controllers
 
         private readonly Dictionary<string, Stream> _streams = new Dictionary<string, Stream>();
 
-
         public ViewerController()
         {
             var htmlConfig = new ViewerConfig
@@ -43,13 +42,13 @@ namespace MvcSample.Controllers
 
             _htmlHandler = new ViewerHtmlHandler(htmlConfig);
 
-
             var imageConfig = new ViewerConfig
             {
                 StoragePath = _storagePath,
                 TempPath = _tempPath,
                 UseCache = true
             };
+
             _imageHandler = new ViewerImageHandler(imageConfig);
 
             _streams.Add("ProcessFileFromStreamExample_1.pdf", HttpWebRequest.Create("http://unfccc.int/resource/docs/convkp/kpeng.pdf").GetResponse().GetResponseStream());
@@ -354,7 +353,8 @@ namespace MvcSample.Controllers
                     var text = new StreamReader(cssStream).ReadToEnd();
 
                     var needResave = false;
-                    if (text.IndexOf("url(\"", StringComparison.Ordinal) >= 0)
+                    if (text.IndexOf("url(\"", StringComparison.Ordinal) >= 0 &&
+                        text.IndexOf("url(\"/document-viewer/GetResourceForHtml?documentPath=", StringComparison.Ordinal) < 0)
                     {
                         needResave = true;
                         text = text.Replace("url(\"",
@@ -362,7 +362,8 @@ namespace MvcSample.Controllers
                         filePath, page.PageNumber));
                     }
 
-                    if (text.IndexOf("url('", StringComparison.Ordinal) >= 0)
+                    if (text.IndexOf("url('", StringComparison.Ordinal) >= 0 &&
+                        text.IndexOf("url('/document-viewer/GetResourceForHtml?documentPath=", StringComparison.Ordinal) < 0)
                     {
                         needResave = true;
                         text = text.Replace("url('",
@@ -370,6 +371,7 @@ namespace MvcSample.Controllers
                                 "url('/document-viewer/GetResourceForHtml?documentPath={0}&pageNumber={1}&resourceName=",
                                 filePath, page.PageNumber));
                     }
+
                     cssList.Add(text);
 
                     if (needResave)
@@ -539,7 +541,7 @@ namespace MvcSample.Controllers
             List<string> cssList;
             var htmlPages = GetHtmlPages(fileName, htmlOptions, out cssList);
             result.pageHtml = htmlPages.Select(_ => _.HtmlContent).ToArray();
-            result.pageCss = cssList.ToArray();
+            result.pageCss = new[] { string.Join(" ", cssList) };
 
             //NOTE: Fix for incomplete cells document
             for (var i = 0; i < result.pageHtml.Length; i++)
