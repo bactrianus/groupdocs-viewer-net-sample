@@ -555,7 +555,7 @@ namespace MvcSample.Controllers
 
             var htmlOptions = new HtmlOptions
             {
-                IsResourcesEmbedded = false,
+                IsResourcesEmbedded = Utils.IsImage(fileName) ? true : false,
                 HtmlResourcePrefix = string.Format(
                 "/document-viewer/GetResourceForHtml?documentPath={0}", fileName) + "&pageNumber={page-number}&resourceName=",
                 Watermark = Utils.GetWatermark(request.WatermarkText, request.WatermarkColor, request.WatermarkPosition, request.WatermarkWidth)
