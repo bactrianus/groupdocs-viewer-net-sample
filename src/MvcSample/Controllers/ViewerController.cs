@@ -16,6 +16,8 @@ using System.Net.Mime;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
+using GroupDocs.Viewer.Domain.Containers;
+using GroupDocs.Viewer.Domain.Image;
 using WatermarkPosition = MvcSample.Models.WatermarkPosition;
 
 namespace MvcSample.Controllers
@@ -28,6 +30,8 @@ namespace MvcSample.Controllers
         // App_Data folder path
         private readonly string _storagePath = AppDomain.CurrentDomain.GetData("DataDirectory").ToString();
         private readonly string _tempPath = AppDomain.CurrentDomain.GetData("DataDirectory") + "\\Temp";
+
+        private readonly ConvertImageFileType _convertImageFileType = ConvertImageFileType.JPG;
 
         private readonly Dictionary<string, Stream> _streams = new Dictionary<string, Stream>();
 
@@ -53,12 +57,6 @@ namespace MvcSample.Controllers
 
             _streams.Add("ProcessFileFromStreamExample_1.pdf", HttpWebRequest.Create("http://unfccc.int/resource/docs/convkp/kpeng.pdf").GetResponse().GetResponseStream());
             _streams.Add("ProcessFileFromStreamExample_2.doc", HttpWebRequest.Create("http://www.acm.org/sigs/publications/pubform.doc").GetResponse().GetResponseStream());
-        }
-
-        // GET: /Viewer/
-        public ActionResult Index()
-        {
-            return View();
         }
 
         [HttpPost]
@@ -113,51 +111,18 @@ namespace MvcSample.Controllers
             if (string.IsNullOrEmpty(parameters.Path))
             {
                 var empty = new GetImageUrlsResponse { imageUrls = new string[0] };
-
-                var serialized = new JavaScriptSerializer().Serialize(empty);
-                return Content(serialized, "application/json");
+                return ToJsonResult(empty);
             }
 
-            var imageOptions = new ImageOptions();
-            if (parameters.Quality.HasValue)
-            {
-                // NOTE: imageOptions.JpegQuality available since 3.2.0 version
-                //imageOptions.JpegQuality = parameters.Quality.Value;
-                //imageOptions.ConvertImageFileType = ConvertImageFileType.JPG;
-            }
+            DocumentInfoOptions documentInfoOptions = new DocumentInfoOptions(parameters.Path);
+            DocumentInfoContainer documentInfoContainer = _imageHandler.GetDocumentInfo(documentInfoOptions);
 
-            var imagePages = _imageHandler.GetPages(parameters.Path, imageOptions);
+            var pageCount = documentInfoContainer.Pages.Count;
+            var applicationHost = GetApplicationHost();
 
-            // Save images some where and provide urls
-            var urls = new List<string>();
-            var tempFolderPath = Path.Combine(Server.MapPath("~"), "Content", "TempStorage");
+            string[] imageUrls = ImageUrlHelper.GetImageUrls(applicationHost, pageCount, parameters);
 
-            foreach (var pageImage in imagePages)
-            {
-                var docFoldePath = Path.Combine(tempFolderPath, Path.GetFileName(parameters.Path));
-
-                using (new InterProcessLock(docFoldePath))
-                {
-                    if (!Directory.Exists(docFoldePath))
-                        Directory.CreateDirectory(docFoldePath);
-                }
-
-                var pageImageName = string.Format("{0}\\{1}.png", docFoldePath, pageImage.PageNumber);
-
-                using (var stream = pageImage.Stream)
-                using (var fileStream = new FileStream(pageImageName, FileMode.Create))
-                {
-                    stream.Seek(0, SeekOrigin.Begin);
-                    stream.CopyTo(fileStream);
-                }
-
-                var baseUrl = Request.Url.Scheme + "://" + Request.Url.Authority + Request.ApplicationPath.TrimEnd('/') +
-                                "/";
-                urls.Add(string.Format("{0}Content/TempStorage/{1}/{2}.png", baseUrl, parameters.Path,
-                    pageImage.PageNumber));
-            }
-
-            var result = new GetImageUrlsResponse { imageUrls = urls.ToArray() };
+            var result = new GetImageUrlsResponse { imageUrls = imageUrls };
             return ToJsonResult(result);
         }
 
@@ -309,6 +274,71 @@ namespace MvcSample.Controllers
             return ToJsonResult(result);
         }
 
+        [HttpGet]
+        public ActionResult GetDocumentPageImage(GetDocumentPageImageParameters parameters)
+        {
+            //parameters.IgnoreDocumentAbsence - not supported
+            //parameters.InstanceIdToken - not supported
+
+            string guid = parameters.Path;
+            int pageIndex = parameters.PageIndex;
+            int pageNumber = pageIndex + 1;
+
+            ViewerConfig viewerConfig = new ViewerConfig
+            {
+                StoragePath = _storagePath,
+                TempPath = _tempPath,
+                UsePdf = parameters.UsePdf
+            };
+
+            /*
+            //NOTE: This feature is supported starting from version 3.2.0
+            CultureInfo cultureInfo = string.IsNullOrEmpty(parameters.Locale)
+                ? new CultureInfo("en-Us")
+                : new CultureInfo(parameters.Locale);
+
+            ViewerImageHandler viewerImageHandler = new ViewerImageHandler(viewerConfig, cultureInfo);
+            */
+
+            ViewerImageHandler viewerImageHandler = new ViewerImageHandler(viewerConfig);
+
+            var imageOptions = new ImageOptions
+            {
+                PageNumber = pageNumber,
+                CountPagesToConvert = 1,
+                ConvertImageFileType = _convertImageFileType,
+                Watermark = Utils.GetWatermark(parameters.WatermarkText, parameters.WatermarkColor,
+                    parameters.WatermarkPosition, parameters.WatermarkWidth),
+                Transformations = parameters.Rotate ? Transformation.Rotate : Transformation.None
+            };
+
+            if (parameters.Rotate && parameters.Width.HasValue)
+            {
+                DocumentInfoOptions documentInfoOptions = new DocumentInfoOptions(guid);
+                DocumentInfoContainer documentInfoContainer = viewerImageHandler.GetDocumentInfo(documentInfoOptions);
+
+                int side = parameters.Width.Value;
+
+                int pageAngle = documentInfoContainer.Pages[pageIndex].Angle;
+                if (pageAngle == 90 || pageAngle == 270)
+                    imageOptions.Height = side;
+                else
+                    imageOptions.Width = side;
+            }
+
+            /*
+            //NOTE: This feature is supported starting from version 3.2.0
+            if (parameters.Quality.HasValue)
+                imageOptions.JpegQuality = parameters.Quality.Value;
+            */
+
+            using (new InterProcessLock(guid))
+            {
+                List<PageImage> pageImages = viewerImageHandler.GetPages(guid, imageOptions);
+                return File(pageImages[0].Stream, GetContentType(_convertImageFileType));
+            }
+        }
+
         public ActionResult GetResourceForHtml(GetResourceForHtmlParameters parameters)
         {
             if (!string.IsNullOrEmpty(parameters.ResourceName) &&
@@ -328,7 +358,6 @@ namespace MvcSample.Controllers
 
             return File(stream, Utils.GetImageMimeTypeFromFilename(parameters.ResourceName));
         }
-
 
         private List<PageHtml> GetHtmlPages(string filePath, HtmlOptions htmlOptions, out List<string> cssList)
         {
@@ -574,6 +603,32 @@ namespace MvcSample.Controllers
                 request.WatermarkPosition, request.WatermarkWidth,
                 request.IgnoreDocumentAbsence,
                 request.UseHtmlBasedEngine, request.SupportPageRotation);
+        }
+
+        private string GetApplicationHost()
+        {
+            return Request.Url.Scheme + "://" + Request.Url.Authority + Request.ApplicationPath.TrimEnd('/');
+        }
+
+        private string GetContentType(ConvertImageFileType convertImageFileType)
+        {
+            string contentType;
+            switch (convertImageFileType)
+            {
+                case ConvertImageFileType.JPG:
+                    contentType = "image/jpeg";
+                    break;
+                case ConvertImageFileType.BMP:
+                    contentType = "image/bmp";
+                    break;
+                case ConvertImageFileType.PNG:
+                    contentType = "image/png"; ;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return contentType;
         }
     }
 }

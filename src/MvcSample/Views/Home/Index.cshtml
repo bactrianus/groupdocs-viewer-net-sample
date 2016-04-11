@@ -23,57 +23,57 @@
 
 @section scripts{
     <script>
-        $(function () {
-            $('#viewerHtmlDiv').groupdocsViewer({
-                //filePath: 'http://groupdocs.com/images/banner/carousel2/signature.png',
-                //filePath: 'candy.pdf',
-                //filePath: 'ProcessFileFromStreamExample_1.pdf',
-                //filePath: 'ProcessFileFromStreamExample_2.doc',
-                filePath: 'demo.docx',
-
-                zoomToFitWidth: true,
-                showFolderBrowser: true,
-                showHeader: true,
-                showPaging: true,
-                //showThumbnails: true,
-                //useHtmlThumbnails: true,
-                width: 650,
-                height: 900,
-                //watermarkPosition: 'Diagonal',
-                //watermarkText: 'Watermark for pdf',
-                useHtmlBasedEngine: true,
-                showDownload: true,
-                downloadPdfFile: true,
-                showPrint: true,
-                usePdfPrinting: true,
-                enableStandardErrorHandling: false,
-                preloadPagesCount: 1
-            });
-
-            // EnableRightClickMenu = false
-            $('#viewerHtmlDiv')[0].oncontextmenu = function () { { return false; } };
-
-        });
-
         //$(function () {
-        //    $('#viewerImageDiv').groupdocsViewer({
+        //    $('#viewerHtmlDiv').groupdocsViewer({
+        //        //filePath: 'http://groupdocs.com/images/banner/carousel2/signature.png',
+        //        //filePath: 'candy.pdf',
+        //        //filePath: 'ProcessFileFromStreamExample_1.pdf',
+        //        //filePath: 'ProcessFileFromStreamExample_2.doc',
         //        filePath: 'demo.docx',
-        //        quality: 100,
-        //        //filePath: 'http://www2.ensc.sfu.ca/grad/theses/tips/Effective_presentation.ppt',
+
         //        zoomToFitWidth: true,
         //        showFolderBrowser: true,
         //        showHeader: true,
         //        showPaging: true,
+        //        //showThumbnails: true,
+        //        //useHtmlThumbnails: true,
         //        width: 650,
         //        height: 900,
-        //        watermarkPosition: 'Diagonal',
-        //        watermarkText: 'Watermark for image',
-        //        useHtmlBasedEngine: false,
+        //        //watermarkPosition: 'Diagonal',
+        //        //watermarkText: 'Watermark for pdf',
+        //        useHtmlBasedEngine: true,
         //        showDownload: true,
-        //        downloadPdfFile: false,
+        //        downloadPdfFile: true,
         //        showPrint: true,
-        //        usePdfPrinting: false
+        //        usePdfPrinting: true,
+        //        enableStandardErrorHandling: false,
+        //        preloadPagesCount: 1
         //    });
+
+        //    // EnableRightClickMenu = false
+        //    $('#viewerHtmlDiv')[0].oncontextmenu = function () { { return false; } };
+
         //});
+
+        $(function () {
+            $('#viewerImageDiv').groupdocsViewer({
+                filePath: 'demo.docx',
+                quality: 100,
+                //filePath: 'http://www2.ensc.sfu.ca/grad/theses/tips/Effective_presentation.ppt',
+                zoomToFitWidth: true,
+                showFolderBrowser: true,
+                showHeader: true,
+                showPaging: true,
+                width: 650,
+                height: 900,
+                watermarkPosition: 'Diagonal',
+                watermarkText: 'Watermark for image',
+                useHtmlBasedEngine: false,
+                showDownload: true,
+                downloadPdfFile: false,
+                showPrint: true,
+                usePdfPrinting: false
+            });
+        });
     </script>
 }
