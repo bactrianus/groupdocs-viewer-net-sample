@@ -32,6 +32,7 @@ namespace MvcSample.Controllers
         private readonly string _tempPath = AppDomain.CurrentDomain.GetData("DataDirectory") + "\\Temp";
 
         private readonly ConvertImageFileType _convertImageFileType = ConvertImageFileType.JPG;
+        private readonly bool _usePdfInImageEngine = true;
 
         private readonly Dictionary<string, Stream> _streams = new Dictionary<string, Stream>();
 
@@ -50,7 +51,8 @@ namespace MvcSample.Controllers
             {
                 StoragePath = _storagePath,
                 TempPath = _tempPath,
-                UseCache = true
+                UseCache = true,
+                UsePdf = _usePdfInImageEngine
             };
 
             _imageHandler = new ViewerImageHandler(imageConfig);
@@ -282,14 +284,7 @@ namespace MvcSample.Controllers
 
             string guid = parameters.Path;
             int pageIndex = parameters.PageIndex;
-            int pageNumber = pageIndex + 1;
-
-            ViewerConfig viewerConfig = new ViewerConfig
-            {
-                StoragePath = _storagePath,
-                TempPath = _tempPath,
-                UsePdf = parameters.UsePdf
-            };
+            int pageNumber = pageIndex;
 
             /*
             //NOTE: This feature is supported starting from version 3.2.0
@@ -300,12 +295,8 @@ namespace MvcSample.Controllers
             ViewerImageHandler viewerImageHandler = new ViewerImageHandler(viewerConfig, cultureInfo);
             */
 
-            ViewerImageHandler viewerImageHandler = new ViewerImageHandler(viewerConfig);
-
             var imageOptions = new ImageOptions
             {
-                PageNumber = pageNumber,
-                CountPagesToConvert = 1,
                 ConvertImageFileType = _convertImageFileType,
                 Watermark = Utils.GetWatermark(parameters.WatermarkText, parameters.WatermarkColor,
                     parameters.WatermarkPosition, parameters.WatermarkWidth),
@@ -315,7 +306,7 @@ namespace MvcSample.Controllers
             if (parameters.Rotate && parameters.Width.HasValue)
             {
                 DocumentInfoOptions documentInfoOptions = new DocumentInfoOptions(guid);
-                DocumentInfoContainer documentInfoContainer = viewerImageHandler.GetDocumentInfo(documentInfoOptions);
+                DocumentInfoContainer documentInfoContainer = _imageHandler.GetDocumentInfo(documentInfoOptions);
 
                 int side = parameters.Width.Value;
 
@@ -334,8 +325,9 @@ namespace MvcSample.Controllers
 
             using (new InterProcessLock(guid))
             {
-                List<PageImage> pageImages = viewerImageHandler.GetPages(guid, imageOptions);
-                return File(pageImages[0].Stream, GetContentType(_convertImageFileType));
+                List<PageImage> pageImages = _imageHandler.GetPages(guid, imageOptions);
+                PageImage pageImage = pageImages.Single(_ => _.PageNumber == pageNumber);
+                return File(pageImage.Stream, GetContentType(_convertImageFileType));
             }
         }
 
@@ -357,6 +349,23 @@ namespace MvcSample.Controllers
                 return new HttpStatusCodeResult((int)HttpStatusCode.Gone);
 
             return File(stream, Utils.GetImageMimeTypeFromFilename(parameters.ResourceName));
+        }
+
+        public ActionResult RotatePage(RotatePageParameters parameters)
+        {
+            string guid = parameters.Path;
+            int pageIndex = parameters.PageNumber;
+            int pageNumber = pageIndex + 1;
+
+            RotatePageOptions rotatePageOptions = new RotatePageOptions(guid, pageNumber, parameters.RotationAmount);
+            RotatePageContainer rotatePageContainer = _imageHandler.RotatePage(rotatePageOptions);
+
+            RotatePageResponse response = new RotatePageResponse
+            {
+                resultAngle = rotatePageContainer.CurrentRotationAngle
+            };
+
+            return ToJsonResult(response);
         }
 
         private List<PageHtml> GetHtmlPages(string filePath, HtmlOptions htmlOptions, out List<string> cssList)
@@ -479,50 +488,12 @@ namespace MvcSample.Controllers
             result.docType = docInfo.DocumentType;
             result.fileType = docInfo.FileType;
 
-            var imageOptions = new ImageOptions
-            {
-                Watermark = Utils.GetWatermark(request.WatermarkText, request.WatermarkColor, request.WatermarkPosition, request.WatermarkWidth)
-            };
+            DocumentInfoOptions documentInfoOptions = new DocumentInfoOptions(request.Path);
+            DocumentInfoContainer documentInfoContainer = _imageHandler.GetDocumentInfo(documentInfoOptions);
 
-            // NOTE: imageOptions.JpegQuality available since 3.2.0 version
-            //if (request.Quality.HasValue)
-            //    imageOptions.JpegQuality = request.Quality.Value;
-
-            var imagePages = _imageHandler.GetPages(fileName, imageOptions);
-
-            // Provide images urls
-            var urls = new List<string>();
-
-            // If no cache - save images to temp folder
-            var tempFolderPath = Path.Combine(Server.MapPath("~"), "Content", "TempStorage");
-
-            foreach (var pageImage in imagePages)
-            {
-                var docFoldePath = Path.Combine(tempFolderPath, Path.GetFileName(request.Path));
-
-                using (new InterProcessLock(docFoldePath))
-                {
-                    if (!Directory.Exists(docFoldePath))
-                        Directory.CreateDirectory(docFoldePath);
-                }
-
-
-                var pageImageName = string.Format("{0}\\{1}.png", docFoldePath, pageImage.PageNumber);
-
-                using (var stream = pageImage.Stream)
-                using (var fileStream = new FileStream(pageImageName, FileMode.Create))
-                {
-                    stream.Seek(0, SeekOrigin.Begin);
-                    stream.CopyTo(fileStream);
-                }
-
-                var baseUrl = Request.Url.Scheme + "://" + Request.Url.Authority +
-                                Request.ApplicationPath.TrimEnd('/') + "/";
-                urls.Add(string.Format("{0}Content/TempStorage/{1}/{2}.png", baseUrl, request.Path,
-                    pageImage.PageNumber));
-            }
-
-            result.imageUrls = urls.ToArray();
+            var pageCount = documentInfoContainer.Pages.Count;
+            string applicationHost = GetApplicationHost();
+            result.imageUrls = ImageUrlHelper.GetImageUrls(applicationHost, pageCount, request);
         }
 
         private void ViewDocumentAsHtml(ViewDocumentParameters request, ViewDocumentResponse result, string fileName)

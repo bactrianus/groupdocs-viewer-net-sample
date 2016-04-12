@@ -183,10 +183,11 @@ namespace MvcSample.Controllers
         /// <param name="json">The json.</param>
         private void AppendPage(PageData pageData, StringBuilder json)
         {
-            json.Append(string.Format("{{\"w\":{0},\"h\":{1},\"number\":{2}",
+            json.Append(string.Format("{{\"w\":{0},\"h\":{1},\"number\":{2},\"rotation\":{3}",
                 pageData.Width.ToString(_defaultCulture),
                 pageData.Height.ToString(_defaultCulture),
-                (pageData.Number - 1).ToString(_defaultCulture)));
+                (pageData.Number - 1).ToString(_defaultCulture),
+                pageData.Angle));
         }
 
         /// <summary>

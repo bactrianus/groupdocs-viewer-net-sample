@@ -20,6 +20,18 @@ namespace MvcSample.Helpers
                 parameters.InstanceIdToken);
         }
 
+        public static string[] GetImageUrls(string applicationHost, int pageCount, ViewDocumentParameters parameters)
+        {
+            return GetImageUrls(applicationHost, parameters.Path, 1, pageCount, parameters.Width,
+                parameters.Quality, parameters.UsePdf,
+                parameters.WatermarkText, parameters.WatermarkColor,
+                parameters.WatermarkPosition,
+                parameters.WatermarkWidth,
+                parameters.IgnoreDocumentAbsence,
+                parameters.UseHtmlBasedEngine, parameters.SupportPageRotation,
+                parameters.InstanceIdToken);
+        }
+
         private static string[] GetImageUrls(string applicationHost, string path, int startingPageNumber, int pageCount, int? pageWidth, int? quality, bool usePdf = true,
                                              string watermarkText = null, int? watermarkColor = null,
                                              WatermarkPosition? watermarkPosition = WatermarkPosition.Diagonal, float? watermarkWidth = 0,
