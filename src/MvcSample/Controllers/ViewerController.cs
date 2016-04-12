@@ -119,12 +119,20 @@ namespace MvcSample.Controllers
             DocumentInfoOptions documentInfoOptions = new DocumentInfoOptions(parameters.Path);
             DocumentInfoContainer documentInfoContainer = _imageHandler.GetDocumentInfo(documentInfoOptions);
 
-            var pageCount = documentInfoContainer.Pages.Count;
+            int[] pageNumbers = new int[documentInfoContainer.Pages.Count];
+            for (int i = 0; i < documentInfoContainer.Pages.Count; i++)
+            {
+                pageNumbers[i] = documentInfoContainer.Pages[i].Number;
+            }
+
             var applicationHost = GetApplicationHost();
 
-            string[] imageUrls = ImageUrlHelper.GetImageUrls(applicationHost, pageCount, parameters);
+            string[] imageUrls = ImageUrlHelper.GetImageUrls(applicationHost, pageNumbers, parameters);
 
-            var result = new GetImageUrlsResponse { imageUrls = imageUrls };
+            var result = new GetImageUrlsResponse
+            {
+                imageUrls = imageUrls
+            };
             return ToJsonResult(result);
         }
 
@@ -284,7 +292,7 @@ namespace MvcSample.Controllers
 
             string guid = parameters.Path;
             int pageIndex = parameters.PageIndex;
-            int pageNumber = pageIndex;
+            int pageNumber = pageIndex + 1;
 
             /*
             //NOTE: This feature is supported starting from version 3.2.0
@@ -355,7 +363,10 @@ namespace MvcSample.Controllers
         {
             string guid = parameters.Path;
             int pageIndex = parameters.PageNumber;
-            int pageNumber = pageIndex + 1;
+
+            DocumentInfoOptions documentInfoOptions = new DocumentInfoOptions(guid);
+            DocumentInfoContainer documentInfoContainer = _imageHandler.GetDocumentInfo(documentInfoOptions);
+            int pageNumber = documentInfoContainer.Pages[pageIndex].Number;
 
             RotatePageOptions rotatePageOptions = new RotatePageOptions(guid, pageNumber, parameters.RotationAmount);
             RotatePageContainer rotatePageContainer = _imageHandler.RotatePage(rotatePageOptions);
@@ -366,6 +377,22 @@ namespace MvcSample.Controllers
             };
 
             return ToJsonResult(response);
+        }
+
+        public ActionResult ReorderPage(ReorderPageParameters parameters)
+        {
+            string guid = parameters.Path;
+
+            DocumentInfoOptions documentInfoOptions = new DocumentInfoOptions(guid);
+            DocumentInfoContainer documentInfoContainer = _imageHandler.GetDocumentInfo(documentInfoOptions);
+
+            int pageNumber = documentInfoContainer.Pages[parameters.OldPosition].Number;
+            int newPosition = parameters.NewPosition + 1;
+
+            ReorderPageOptions reorderPageOptions = new ReorderPageOptions(guid, pageNumber, newPosition);
+            _imageHandler.ReorderPage(reorderPageOptions);
+
+            return ToJsonResult(new ReorderPageResponse());
         }
 
         private List<PageHtml> GetHtmlPages(string filePath, HtmlOptions htmlOptions, out List<string> cssList)
@@ -491,9 +518,14 @@ namespace MvcSample.Controllers
             DocumentInfoOptions documentInfoOptions = new DocumentInfoOptions(request.Path);
             DocumentInfoContainer documentInfoContainer = _imageHandler.GetDocumentInfo(documentInfoOptions);
 
-            var pageCount = documentInfoContainer.Pages.Count;
+            int[] pageNumbers = new int[documentInfoContainer.Pages.Count];
+            for (int i = 0; i < documentInfoContainer.Pages.Count; i++)
+            {
+                pageNumbers[i] = documentInfoContainer.Pages[i].Number;
+            }
+
             string applicationHost = GetApplicationHost();
-            result.imageUrls = ImageUrlHelper.GetImageUrls(applicationHost, pageCount, request);
+            result.imageUrls = ImageUrlHelper.GetImageUrls(applicationHost, pageNumbers, request);
         }
 
         private void ViewDocumentAsHtml(ViewDocumentParameters request, ViewDocumentResponse result, string fileName)
@@ -529,7 +561,6 @@ namespace MvcSample.Controllers
                 IsResourcesEmbedded = Utils.IsImage(fileName) ? true : false,
                 HtmlResourcePrefix = string.Format(
                 "/document-viewer/GetResourceForHtml?documentPath={0}", fileName) + "&pageNumber={page-number}&resourceName=",
-                Watermark = Utils.GetWatermark(request.WatermarkText, request.WatermarkColor, request.WatermarkPosition, request.WatermarkWidth)
             };
 
             if (request.PreloadPagesCount.HasValue && request.PreloadPagesCount.Value > 0)

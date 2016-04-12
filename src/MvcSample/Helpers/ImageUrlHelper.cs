@@ -8,28 +8,32 @@ namespace MvcSample.Helpers
 {
     public static class ImageUrlHelper
     {
-        public static string[] GetImageUrls(string applicationHost, int pageCount, GetImageUrlsParameters parameters)
+        public static string[] GetImageUrls(string applicationHost, int[] pageNumbers, GetImageUrlsParameters parameters)
         {
-            return GetImageUrls(applicationHost, parameters.Path, parameters.FirstPage, pageCount, parameters.Width,
+            return GetImageUrls(applicationHost, parameters.Path, parameters.FirstPage, pageNumbers.Length, parameters.Width,
                 parameters.Quality, parameters.UsePdf,
                 parameters.WatermarkText, parameters.WatermarkColor,
                 parameters.WatermarkPosition,
                 parameters.WatermarkWidth,
                 parameters.IgnoreDocumentAbsence,
                 parameters.UseHtmlBasedEngine, parameters.SupportPageRotation,
-                parameters.InstanceIdToken);
+                parameters.InstanceIdToken,
+                null,
+                pageNumbers);
         }
 
-        public static string[] GetImageUrls(string applicationHost, int pageCount, ViewDocumentParameters parameters)
+        public static string[] GetImageUrls(string applicationHost, int[] pageNumbers, ViewDocumentParameters parameters)
         {
-            return GetImageUrls(applicationHost, parameters.Path, 1, pageCount, parameters.Width,
+            return GetImageUrls(applicationHost, parameters.Path, 0, pageNumbers.Length, parameters.Width,
                 parameters.Quality, parameters.UsePdf,
                 parameters.WatermarkText, parameters.WatermarkColor,
                 parameters.WatermarkPosition,
                 parameters.WatermarkWidth,
                 parameters.IgnoreDocumentAbsence,
                 parameters.UseHtmlBasedEngine, parameters.SupportPageRotation,
-                parameters.InstanceIdToken);
+                parameters.InstanceIdToken,
+                null,
+                pageNumbers);
         }
 
         private static string[] GetImageUrls(string applicationHost, string path, int startingPageNumber, int pageCount, int? pageWidth, int? quality, bool usePdf = true,
@@ -39,7 +43,8 @@ namespace MvcSample.Helpers
                                              bool useHtmlBasedEngine = false,
                                              bool supportPageRotation = false,
                                              string instanceId = null,
-                                             string locale = null)
+                                             string locale = null,
+                                             int[] pageNumbers = null)
         {
             string[] pageUrls = new string[pageCount];
 
@@ -69,10 +74,21 @@ namespace MvcSample.Helpers
             if (ignoreDocumentAbsence)
                 routeValueDictionary.Add("ignoreDocumentAbsence", ignoreDocumentAbsence);
 
-            for (int i = 0; i < pageCount; i++)
+            if (pageNumbers != null)
             {
-                routeValueDictionary["pageIndex"] = startingPageNumber + i;
-                pageUrls[i] = ConvertUrlToAbsolute(applicationHost, CreateRelativeRequestUrl("GetDocumentPageImage", routeValueDictionary));
+                for (int i = 0; i < pageCount; i++)
+                {
+                    routeValueDictionary["pageIndex"] = pageNumbers[i] - 1;
+                    pageUrls[i] = ConvertUrlToAbsolute(applicationHost, CreateRelativeRequestUrl("GetDocumentPageImage", routeValueDictionary));
+                }
+            }
+            else
+            {
+                for (int i = 0; i < pageCount; i++)
+                {
+                    routeValueDictionary["pageIndex"] = startingPageNumber + i;
+                    pageUrls[i] = ConvertUrlToAbsolute(applicationHost, CreateRelativeRequestUrl("GetDocumentPageImage", routeValueDictionary));
+                }
             }
 
             return pageUrls;

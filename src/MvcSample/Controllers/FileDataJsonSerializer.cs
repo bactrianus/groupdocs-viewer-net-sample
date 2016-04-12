@@ -186,7 +186,7 @@ namespace MvcSample.Controllers
             json.Append(string.Format("{{\"w\":{0},\"h\":{1},\"number\":{2},\"rotation\":{3}",
                 pageData.Width.ToString(_defaultCulture),
                 pageData.Height.ToString(_defaultCulture),
-                (pageData.Number - 1).ToString(_defaultCulture),
+                (pageData.Number).ToString(_defaultCulture),
                 pageData.Angle));
         }
 
