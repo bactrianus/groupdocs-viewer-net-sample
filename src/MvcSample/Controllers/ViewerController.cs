@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mime;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
@@ -264,6 +265,7 @@ namespace MvcSample.Controllers
                 throw new ArgumentException("A document path must be specified", "path");
 
             List<string> cssList;
+            int pageNumber = parameters.PageIndex + 1;
 
             var htmlOptions = new HtmlOptions
             {
@@ -402,12 +404,10 @@ namespace MvcSample.Controllers
             foreach (var page in htmlPages)
             {
                 var indexOfBodyOpenTag = page.HtmlContent.IndexOf("<body>", StringComparison.InvariantCultureIgnoreCase);
-
                 if (indexOfBodyOpenTag > 0)
                     page.HtmlContent = page.HtmlContent.Substring(indexOfBodyOpenTag + "<body>".Length);
 
                 var indexOfBodyCloseTag = page.HtmlContent.IndexOf("</body>", StringComparison.InvariantCultureIgnoreCase);
-
                 if (indexOfBodyCloseTag > 0)
                     page.HtmlContent = page.HtmlContent.Substring(0, indexOfBodyCloseTag);
 
@@ -445,6 +445,16 @@ namespace MvcSample.Controllers
 
                         System.IO.File.WriteAllText(fullPath, text);
                     }
+                }
+
+                List<string> cssClasses = Utils.GetCssClasses(page.HtmlContent);
+                foreach (var cssClass in cssClasses)
+                {
+                    var newCssClass = string.Format("page-{0}-{1}", page.PageNumber, cssClass);
+
+                    page.HtmlContent = page.HtmlContent.Replace(cssClass, newCssClass);
+                    for (int i = 0; i < cssList.Count; i++)
+                        cssList[i] = cssList[i].Replace(cssClass, newCssClass);
                 }
             }
             return htmlPages;
@@ -557,7 +567,7 @@ namespace MvcSample.Controllers
 
             var htmlOptions = new HtmlOptions
             {
-                IsResourcesEmbedded = Utils.IsImage(fileName) ? true : false,
+                IsResourcesEmbedded = Utils.IsImage(fileName),
                 HtmlResourcePrefix = string.Format(
                 "/document-viewer/GetResourceForHtml?documentPath={0}", fileName) + "&pageNumber={page-number}&resourceName=",
             };
@@ -572,15 +582,6 @@ namespace MvcSample.Controllers
             var htmlPages = GetHtmlPages(fileName, htmlOptions, out cssList);
             result.pageHtml = htmlPages.Select(_ => _.HtmlContent).ToArray();
             result.pageCss = new[] { string.Join(" ", cssList) };
-
-            //NOTE: Fix for incomplete cells document
-            for (var i = 0; i < result.pageHtml.Length; i++)
-            {
-                var html = result.pageHtml[i];
-                var indexOfScript = html.IndexOf("script", StringComparison.InvariantCultureIgnoreCase);
-                if (indexOfScript > 0)
-                    result.pageHtml[i] = html.Substring(0, indexOfScript);
-            }
         }
 
         private string GetFileUrl(ViewDocumentParameters request)
