@@ -1,11 +1,11 @@
-using GroupDocs.Viewer.Domain;
 using System;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using GroupDocs.Viewer.Converter.Options;
+using GroupDocs.Viewer.Domain;
 
-namespace MvcSample.Controllers
+namespace MvcSample.Helpers
 {
     /// <summary>
     /// Class FileDataJsonSerializer.

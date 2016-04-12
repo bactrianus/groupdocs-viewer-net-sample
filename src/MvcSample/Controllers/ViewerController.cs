@@ -284,7 +284,6 @@ namespace MvcSample.Controllers
             return ToJsonResult(result);
         }
 
-        [HttpGet]
         public ActionResult GetDocumentPageImage(GetDocumentPageImageParameters parameters)
         {
             //parameters.IgnoreDocumentAbsence - not supported
