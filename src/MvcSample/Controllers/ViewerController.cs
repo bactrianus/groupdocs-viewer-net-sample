@@ -13,7 +13,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mime;
-using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
@@ -36,8 +35,8 @@ namespace MvcSample.Controllers
         private readonly bool _usePdfInImageEngine = true;
 
         private readonly Dictionary<string, Stream> _streams = new Dictionary<string, Stream>();
-        private ViewerConfig _htmlConfig;
-        private ViewerConfig _imageConfig;
+        private readonly ViewerConfig _htmlConfig;
+        private readonly ViewerConfig _imageConfig;
 
         public ViewerController()
         {
@@ -262,7 +261,6 @@ namespace MvcSample.Controllers
         {
             if (Utils.IsValidUrl(parameters.Path))
                 parameters.Path = Utils.GetFilenameFromUrl(parameters.Path);
-
             if (String.IsNullOrWhiteSpace(parameters.Path))
                 throw new ArgumentException("A document path must be specified", "path");
 
@@ -271,7 +269,7 @@ namespace MvcSample.Controllers
 
             var htmlOptions = new HtmlOptions
             {
-                PageNumber = parameters.PageIndex + 1,
+                PageNumber = pageNumber,
                 CountPagesToConvert = 1,
                 IsResourcesEmbedded = false,
                 HtmlResourcePrefix = string.Format(
@@ -328,12 +326,10 @@ namespace MvcSample.Controllers
                     imageOptions.Width = side;
             }
 
-            using (new InterProcessLock(guid))
-            {
-                List<PageImage> pageImages = viewerImageHandler.GetPages(guid, imageOptions);
-                PageImage pageImage = pageImages.Single();
-                return File(pageImage.Stream, GetContentType(_convertImageFileType));
-            }
+            List<PageImage> pageImages = viewerImageHandler.GetPages(guid, imageOptions);
+            PageImage pageImage = pageImages.Single();
+
+            return File(pageImage.Stream, GetContentType(_convertImageFileType));
         }
 
         public ActionResult GetResourceForHtml(GetResourceForHtmlParameters parameters)
