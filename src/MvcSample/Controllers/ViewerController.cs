@@ -36,19 +36,21 @@ namespace MvcSample.Controllers
         private readonly bool _usePdfInImageEngine = true;
 
         private readonly Dictionary<string, Stream> _streams = new Dictionary<string, Stream>();
+        private ViewerConfig _htmlConfig;
+        private ViewerConfig _imageConfig;
 
         public ViewerController()
         {
-            var htmlConfig = new ViewerConfig
+            _htmlConfig = new ViewerConfig
             {
                 StoragePath = _storagePath,
                 TempPath = _tempPath,
                 UseCache = true
             };
 
-            _htmlHandler = new ViewerHtmlHandler(htmlConfig);
+            _htmlHandler = new ViewerHtmlHandler(_htmlConfig);
 
-            var imageConfig = new ViewerConfig
+            _imageConfig = new ViewerConfig
             {
                 StoragePath = _storagePath,
                 TempPath = _tempPath,
@@ -56,7 +58,7 @@ namespace MvcSample.Controllers
                 UsePdf = _usePdfInImageEngine
             };
 
-            _imageHandler = new ViewerImageHandler(imageConfig);
+            _imageHandler = new ViewerImageHandler(_imageConfig);
 
             _streams.Add("ProcessFileFromStreamExample_1.pdf", HttpWebRequest.Create("http://unfccc.int/resource/docs/convkp/kpeng.pdf").GetResponse().GetResponseStream());
             _streams.Add("ProcessFileFromStreamExample_2.doc", HttpWebRequest.Create("http://www.acm.org/sigs/publications/pubform.doc").GetResponse().GetResponseStream());
@@ -295,22 +297,22 @@ namespace MvcSample.Controllers
             int pageIndex = parameters.PageIndex;
             int pageNumber = pageIndex + 1;
 
-            /*
-            //NOTE: This feature is supported starting from version 3.2.0
-            CultureInfo cultureInfo = string.IsNullOrEmpty(parameters.Locale)
-                ? new CultureInfo("en-Us")
-                : new CultureInfo(parameters.Locale);
-
-            ViewerImageHandler viewerImageHandler = new ViewerImageHandler(viewerConfig, cultureInfo);
-            */
+            ViewerImageHandler viewerImageHandler = string.IsNullOrEmpty(parameters.Locale)
+                ? new ViewerImageHandler(_imageConfig)
+                : new ViewerImageHandler(_imageConfig, new CultureInfo(parameters.Locale));
 
             var imageOptions = new ImageOptions
             {
                 ConvertImageFileType = _convertImageFileType,
                 Watermark = Utils.GetWatermark(parameters.WatermarkText, parameters.WatermarkColor,
                     parameters.WatermarkPosition, parameters.WatermarkWidth),
-                Transformations = parameters.Rotate ? Transformation.Rotate : Transformation.None
+                Transformations = parameters.Rotate ? Transformation.Rotate : Transformation.None,
+                CountPagesToConvert = 1,
+                PageNumber = pageNumber
             };
+
+            if (parameters.Quality.HasValue)
+                imageOptions.JpegQuality = parameters.Quality.Value;
 
             if (parameters.Rotate && parameters.Width.HasValue)
             {
@@ -326,16 +328,10 @@ namespace MvcSample.Controllers
                     imageOptions.Width = side;
             }
 
-            /*
-            //NOTE: This feature is supported starting from version 3.2.0
-            if (parameters.Quality.HasValue)
-                imageOptions.JpegQuality = parameters.Quality.Value;
-            */
-
             using (new InterProcessLock(guid))
             {
-                List<PageImage> pageImages = _imageHandler.GetPages(guid, imageOptions);
-                PageImage pageImage = pageImages.Single(_ => _.PageNumber == pageNumber);
+                List<PageImage> pageImages = viewerImageHandler.GetPages(guid, imageOptions);
+                PageImage pageImage = pageImages.Single();
                 return File(pageImage.Stream, GetContentType(_convertImageFileType));
             }
         }
