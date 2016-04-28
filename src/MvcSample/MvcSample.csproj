@@ -129,6 +129,8 @@
     </Compile>
     <Compile Include="Helpers\ImageUrlHelper.cs" />
     <Compile Include="Helpers\InterProcessLock.cs" />
+    <Compile Include="Helpers\Locales.cs" />
+    <Compile Include="Helpers\LocalizationHelper.cs" />
     <Compile Include="Helpers\Utils.cs" />
     <Compile Include="Models\FileBrowserTreeDataResponse.cs" />
     <Compile Include="Models\GetDocumentPageHtmlParameters.cs" />
@@ -201,6 +203,18 @@
     <Content Include="Content\fonts\PT_Sans-Web-Regular.ttf" />
     <Content Include="Content\fonts\PT_Sans-Web-Regular.woff" />
     <None Include="Properties\PublishProfiles\k2.pubxml" />
+    <EmbeddedResource Include="Resources\LocalizedStrings-ar-AE.json" />
+    <EmbeddedResource Include="Resources\LocalizedStrings-en-US.json" />
+    <EmbeddedResource Include="Resources\LocalizedStrings-es-ES.json" />
+    <EmbeddedResource Include="Resources\LocalizedStrings-fr-FR.json" />
+    <EmbeddedResource Include="Resources\LocalizedStrings-it-IT.json" />
+    <EmbeddedResource Include="Resources\LocalizedStrings-nb-NO.json" />
+    <EmbeddedResource Include="Resources\LocalizedStrings-pl-PL.json" />
+    <EmbeddedResource Include="Resources\LocalizedStrings-pt-PT.json" />
+    <EmbeddedResource Include="Resources\LocalizedStrings-ru-RU.json" />
+    <EmbeddedResource Include="Resources\LocalizedStrings-tr-TR.json" />
+    <EmbeddedResource Include="Resources\LocalizedStrings-zh-CN.json" />
+    <EmbeddedResource Include="Resources\LocalizedStrings-zh-TW.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

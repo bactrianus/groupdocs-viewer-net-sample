@@ -1,4 +1,6 @@
-﻿<h2 style="text-align: center">GroupDocs.Viewer for .NET Sample</h2>
+﻿@using MvcSample.Helpers
+
+<h2 style="text-align: center">GroupDocs.Viewer for .NET Sample</h2>
 
 <table>
     <tr>
@@ -23,7 +25,7 @@
 
 @section scripts{
     <script>
-        $(function () {
+        $(function() {
             var viewerSyle = {
                 ScrollView: 1,
                 DoublePageFlip: 2,
@@ -34,11 +36,9 @@
 
             $('#viewerHtmlDiv').groupdocsViewer({
                 //filePath: 'http://groupdocs.com/images/banner/carousel2/signature.png',
-                filePath: 'demo.docx',
-                //filePath: 'ProcessFileFromStreamExample_1.pdf',
+                filePath: 'demo.docx', //filePath: 'ProcessFileFromStreamExample_1.pdf',
                 //filePath: 'ProcessFileFromStreamExample_2.doc',
-                zoomToFitWidth: true,
-                //zoomToFitHeight: true,
+                zoomToFitWidth: true, //zoomToFitHeight: true,
                 showFolderBrowser: true,
                 showHeader: true,
                 showPaging: true,
@@ -53,7 +53,8 @@
                 preloadPagesCount: 1,
                 viewerStyle: viewerSyle.ScrollView, //Layout type
                 showZoom: true,
-                minimumImageWidth: 900
+                minimumImageWidth: 900,
+                localizedStrings: @LocalizationHelper.GetLocalizedStringsJson(Locales.PlPl)
             });
 
             // EnableRightClickMenu = false
