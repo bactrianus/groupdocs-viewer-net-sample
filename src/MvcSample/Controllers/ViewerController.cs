@@ -512,7 +512,10 @@ namespace MvcSample.Controllers
                 MaxHeight = maxHeight
             };
 
-            result.documentDescription = new FileDataJsonSerializer(fileData, new FileDataOptions()).Serialize(true);
+            FileDataOptions fileDataOptions = new FileDataOptions();
+            fileDataOptions.UsePdf = request.UsePdf;
+
+            result.documentDescription = new FileDataJsonSerializer(fileData, fileDataOptions).Serialize(true);
             result.docType = docInfo.DocumentType;
             result.fileType = docInfo.FileType;
 
