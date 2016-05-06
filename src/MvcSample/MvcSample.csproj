@@ -129,6 +129,7 @@
     </Compile>
     <Compile Include="Helpers\ImageUrlHelper.cs" />
     <Compile Include="Helpers\InterProcessLock.cs" />
+    <Compile Include="Helpers\LargeJsonResult.cs" />
     <Compile Include="Helpers\Locales.cs" />
     <Compile Include="Helpers\LocalizationHelper.cs" />
     <Compile Include="Helpers\Utils.cs" />

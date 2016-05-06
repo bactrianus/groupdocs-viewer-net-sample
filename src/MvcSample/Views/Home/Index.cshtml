@@ -34,6 +34,8 @@
                 CoverThenTwoPagesInRow: 5
             };
 
+            var localizedStrings = @LocalizationHelper.GetLocalizedStringsJson(Locales.PlPl);
+
             $('#viewerHtmlDiv').groupdocsViewer({
                 //filePath: 'http://groupdocs.com/images/banner/carousel2/signature.png',
                 filePath: 'demo.docx', //filePath: 'ProcessFileFromStreamExample_1.pdf',
@@ -42,7 +44,7 @@
                 showFolderBrowser: true,
                 showHeader: true,
                 showPaging: true,
-                width: 650,
+                width: 750,
                 height: 900,
                 useHtmlBasedEngine: true,
                 showDownload: true,
@@ -54,7 +56,7 @@
                 viewerStyle: viewerSyle.ScrollView, //Layout type
                 showZoom: true,
                 minimumImageWidth: 900,
-                localizedStrings: @LocalizationHelper.GetLocalizedStringsJson(Locales.PlPl)
+                localizedStrings: localizedStrings
             });
 
             // EnableRightClickMenu = false
@@ -62,33 +64,82 @@
         });
 
         $(function () {
+            var localizedStrings = @LocalizationHelper.GetLocalizedStringsJson(Locales.EnUs);
+
             $('#viewerImageDiv').groupdocsViewer({
-                filePath: 'demo.docx',
-                //filePath: 'http://www2.ensc.sfu.ca/grad/theses/tips/Effective_presentation.ppt',
-                //zoomToFitWidth: true,
-                zoomToFitHeight: true,
-                showFolderBrowser: true,
-                showHeader: true,
-                showPaging: true,
-                width: 650,
-                height: 900,
-                watermarkPosition: 'Diagonal',
-                watermarkText: 'Watermark for image',
-                useHtmlBasedEngine: false,
-                showDownload: true,
-                downloadPdfFile: false,
-                showPrint: true,
-                usePdfPrinting: false,
-                supportPageRotation: true,
+                locale: 'ru-RU',
+                localizedStrings: localizedStrings,
+                thumbsImageBase64Encoded: null,
+                instanceIdToken: null,
+                filePath: 'candy.pdf',
+                quality: 90,
                 showThumbnails: true,
                 openThumbnails: true,
-                supportPageReordering: true,
-                showZoom: true,
-                minimumImageWidth: 900,
-
+                initialZoom: 100,
+                zoomToFitWidth: true,
+                onlyShrinkLargePages: false,
+                zoomToFitHeight: false,
+                width: 750,
+                height: 900,
+                backgroundColor: null,
+                showFolderBrowser: true,
+                showPrint: true,
+                showDownload: true,
+                showZoom: false,
+                showPaging: true,
+                showViewerStyleControl: true,
                 showSearch: true,
+                preloadPagesCount: 1,
+                preloadPagesOnBrowserSide: false,
+                convertWordDocumentsCompletely: true,
+                viewerStyle: 1,
                 supportTextSelection: true,
-                searchForSeparateWords: true
+                usePdfPrinting: false,
+                toolbarButtonsBoxShadowStyle: null,
+                toolbarButtonsBoxShadowHoverStyle: null,
+                thumbnailsContainerBackgroundColor: null,
+                thumbnailsContainerBorderRightColor: null,
+                toolbarBorderBottomColor: null,
+                toolbarInputFieldBorderColor: null,
+                toolbarButtonBorderColor: null,
+                toolbarButtonBorderHoverColor: null,
+                thumbnailsContainerWidth: 0,
+                jqueryFileDownloadCookieName: 'jqueryFileDownloadJSForGD',
+                showDownloadErrorsInPopup: false,
+                showImageWidth: false,
+                showHeader: true,
+                minimumImageWidth: 1153,
+                enableStandardErrorHandling: true,
+                useHtmlBasedEngine: false,
+                useHtmlThumbnails: false,
+                useImageBasedPrinting: true,
+                fileDisplayName: null,
+                downloadPdfFile: true,
+                searchForSeparateWords: false,
+                preventTouchEventsBubbling: false,
+                useInnerThumbnails: false,
+                watermarkText: null,
+                watermarkColor: null,
+                watermarkPosition: 'Diagonal',
+                watermarkWidth: 0,
+                printWithWatermark: false,
+                supportPageReordering: false,
+                searchHighlightColor: null,
+                currentSearchHighlightColor: null,
+                treatPhrasesInDoubleQuotesAsExactPhrases: false,
+                usePngImagesForHtmlBasedEngine: false,
+                showOnePageInRow: false,
+                loadAllPagesOnSearch: false,
+                useEmScaling: false,
+                ignoreDocumentAbsence: false,
+                supportPageRotation: false,
+                useRtl: false,
+                useAccentInsensitiveSearch: false,
+                useVirtualScrolling: false,
+                supportListOfContentControls: false,
+                supportListOfBookmarks: false,
+                embedImagesIntoHtmlForWordFiles: false,
+                saveFontsInAllFormats: false
             });
         });
     </script>

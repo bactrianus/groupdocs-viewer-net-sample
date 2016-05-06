@@ -27,6 +27,11 @@ namespace MvcSample.Helpers
         private readonly CultureInfo _defaultCulture = CultureInfo.InvariantCulture;
 
         /// <summary>
+        /// Two decimals places format
+        /// </summary>
+        private const string TwoDecimalPlacesFormat = "0.##";
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="FileDataJsonSerializer"/> class.
         /// </summary>
         /// <param name="fileData">The file data.</param>
@@ -62,9 +67,7 @@ namespace MvcSample.Helpers
         {
             StringBuilder json = new StringBuilder();
 
-            json.Append(string.Format("{{\"maxPageHeight\":{0},\"widthForMaxHeight\":{1}",
-                _fileData.MaxHeight, _fileData.MaxHeight));
-            json.Append(",\"pages\":[");
+            json.Append("{\"pages\":[");
 
             int pageCount = _fileData.Pages.Count;
             for (int i = 0; i < pageCount; i++)
@@ -94,6 +97,10 @@ namespace MvcSample.Helpers
                 json.Append("}"); // page
             }
             json.Append("]"); // pages
+
+            json.Append(string.Format(",\"maxPageHeight\":{0},\"widthForMaxHeight\":{1}",
+                _fileData.MaxHeight, _fileData.MaxWidth));
+
             json.Append("}"); // document
 
             return json.ToString();
@@ -183,11 +190,21 @@ namespace MvcSample.Helpers
         /// <param name="json">The json.</param>
         private void AppendPage(PageData pageData, StringBuilder json)
         {
-            json.Append(string.Format("{{\"w\":{0},\"h\":{1},\"number\":{2},\"rotation\":{3}",
-                pageData.Width.ToString(_defaultCulture),
-                pageData.Height.ToString(_defaultCulture),
-                (pageData.Number).ToString(_defaultCulture),
-                pageData.Angle));
+            if (pageData.Angle == 0)
+            {
+                json.Append(string.Format("{{\"w\":{0},\"h\":{1},\"number\":{2}",
+                   pageData.Width.ToString(_defaultCulture),
+                   pageData.Height.ToString(_defaultCulture),
+                   (pageData.Number).ToString(_defaultCulture)));
+            }
+            else
+            {
+                json.Append(string.Format("{{\"w\":{0},\"h\":{1},\"number\":{2},\"rotation\":{3}",
+                    pageData.Width.ToString(_defaultCulture),
+                    pageData.Height.ToString(_defaultCulture),
+                    (pageData.Number).ToString(_defaultCulture),
+                    pageData.Angle));
+            }
         }
 
         /// <summary>
@@ -199,17 +216,17 @@ namespace MvcSample.Helpers
         {
             string[] textCoordinates = new string[rowData.TextCoordinates.Count];
             for (int i = 0; i < rowData.TextCoordinates.Count; i++)
-                textCoordinates[i] = rowData.TextCoordinates[i].ToString(_defaultCulture);
+                textCoordinates[i] = rowData.TextCoordinates[i].ToString(TwoDecimalPlacesFormat, _defaultCulture);
 
             string[] characterCoordinates = new string[rowData.CharacterCoordinates.Count];
             for (int i = 0; i < rowData.CharacterCoordinates.Count; i++)
-                characterCoordinates[i] = rowData.CharacterCoordinates[i].ToString(_defaultCulture);
+                characterCoordinates[i] = rowData.CharacterCoordinates[i].ToString(TwoDecimalPlacesFormat, _defaultCulture);
 
             json.Append(String.Format("{{\"l\":{0},\"t\":{1},\"w\":{2},\"h\":{3},\"c\":[{4}],\"s\":\"{5}\",\"ch\":[{6}]}}",
-                rowData.LineLeft.ToString(_defaultCulture),
-                rowData.LineTop.ToString(_defaultCulture),
-                rowData.LineWidth.ToString(_defaultCulture),
-                rowData.LineHeight.ToString(_defaultCulture),
+                rowData.LineLeft.ToString(TwoDecimalPlacesFormat, _defaultCulture),
+                rowData.LineTop.ToString(TwoDecimalPlacesFormat, _defaultCulture),
+                rowData.LineWidth.ToString(TwoDecimalPlacesFormat, _defaultCulture),
+                rowData.LineHeight.ToString(TwoDecimalPlacesFormat, _defaultCulture),
                 string.Join(",", textCoordinates),
                 JsonEncode(rowData.Text),
                 string.Join(",", characterCoordinates)));

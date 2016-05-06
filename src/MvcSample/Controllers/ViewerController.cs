@@ -89,7 +89,7 @@ namespace MvcSample.Controllers
             else
                 ViewDocumentAsImage(request, result, fileName);
 
-            return ToJsonResult(result);
+            return new LargeJsonResult { Data = result };
         }
 
         public ActionResult LoadFileBrowserTreeData(LoadFileBrowserTreeDataParameters parameters)
@@ -516,6 +516,7 @@ namespace MvcSample.Controllers
             fileDataOptions.UsePdf = request.UsePdf;
 
             result.documentDescription = new FileDataJsonSerializer(fileData, fileDataOptions).Serialize(true);
+
             result.docType = docInfo.DocumentType;
             result.fileType = docInfo.FileType;
 
