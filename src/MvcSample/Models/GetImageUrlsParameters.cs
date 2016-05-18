@@ -16,8 +16,13 @@ namespace MvcSample.Models
         public string Callback { get; set; }
     }
 
-    public class GetImageUrlsResponse : OperationStatusResponse
+    public class GetImageUrlsResult : OperationStatusResponse
     {
+        public GetImageUrlsResult(string[] imageUrls)
+        {
+            this.imageUrls = imageUrls;
+        }
+
         public string[] imageUrls { get; set; }
     }
 }

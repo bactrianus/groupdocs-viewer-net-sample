@@ -26,6 +26,7 @@
 @section scripts{
     <script>
         $(function() {
+
             var viewerSyle = {
                 ScrollView: 1,
                 DoublePageFlip: 2,
@@ -38,7 +39,7 @@
 
             $('#viewerHtmlDiv').groupdocsViewer({
                 //filePath: 'http://groupdocs.com/images/banner/carousel2/signature.png',
-                filePath: 'demo.docx', //filePath: 'ProcessFileFromStreamExample_1.pdf',
+                filePath: 'sample.docx', //filePath: 'ProcessFileFromStreamExample_1.pdf',
                 //filePath: 'ProcessFileFromStreamExample_2.doc',
                 zoomToFitWidth: true, //zoomToFitHeight: true,
                 showFolderBrowser: true,
@@ -52,7 +53,7 @@
                 showPrint: true,
                 usePdfPrinting: true,
                 enableStandardErrorHandling: false,
-                preloadPagesCount: 1,
+                preloadPagesCount: 3,
                 viewerStyle: viewerSyle.ScrollView, //Layout type
                 showZoom: true,
                 minimumImageWidth: 900,
@@ -60,18 +61,19 @@
             });
 
             // EnableRightClickMenu = false
-            $('#viewerHtmlDiv')[0].oncontextmenu = function () { return false; };
+            //$('#viewerHtmlDiv')[0].oncontextmenu = function () { return false; };
         });
 
         $(function () {
+
             var localizedStrings = @LocalizationHelper.GetLocalizedStringsJson(Locales.EnUs);
 
             $('#viewerImageDiv').groupdocsViewer({
-                locale: 'ru-RU',
+                locale: 'en-US',
                 localizedStrings: localizedStrings,
                 thumbsImageBase64Encoded: null,
                 instanceIdToken: null,
-                filePath: 'candy.pdf',
+                filePath: 'sample.pdf',
                 quality: 90,
                 showThumbnails: true,
                 openThumbnails: true,

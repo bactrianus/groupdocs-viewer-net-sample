@@ -1,0 +1,88 @@
+MIME-Version: 1.0
+Date: 18 May 2016 12:56:08 +0000
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+=EF=BB=BF<html><head><style type=3D"text/css">
+
+    h1=20
+    {
+        text-align: left;
+    }
+
+@media screen=20
+{
+
+	=2EheaderLineTitle
+	{
+		width:1=2E5in;
+		display:inline;
+		margin:0in;
+		margin-bottom:=2E0001pt;
+		font-size:11=2E0pt;
+		font-family:"Calibri","sans-serif";
+		font-weight:bold;
+	}
+
+	=2EheaderLineText
+	{
+		display:inline;
+		margin:0in;
+		margin-bottom:=2E0001pt;
+		font-size:11=2E0pt;
+		font-family:"Calibri","sans-serif";
+		font-weight:normal;
+	}
+
+   =2EpageHeader
+   {
+		font-size:14=2E0pt;
+		font-family:"Calibri","sans-serif";
+		font-weight:bold;
+		visibility:hidden;
+		display:none;
+   }  =20
+}
+
+@media print=20
+{
+	=2EheaderLineTitle
+	{
+		width:1=2E5in;
+		display:inline;
+		margin:0in;
+		margin-bottom:=2E0001pt;
+		font-size:11=2E0pt;
+		font-family:"Calibri","sans-serif";
+		font-weight:bold;
+	}
+
+	=2EheaderLineText
+	{
+		display:inline;
+		margin:0in;
+		margin-bottom:=2E0001pt;
+		font-size:11=2E0pt;
+		font-family:"Calibri","sans-serif";
+		font-weight:normal;
+	}
+
+   =2EpageHeader
+   {
+		font-size:14=2E0pt;
+		font-family:"Calibri","sans-serif";
+		font-weight:bold;
+		visibility:visible;
+		display:block;
+   }
+
+}
+</style></head><body><h1><div class=3D'pageHeader'>from@mail=2Ecom<hr/></di=
+v><span class=3D'headerLineTitle'>From:</span><span class=3D'headerLineText=
+'>from@mail=2Ecom</span><br/><span class=3D'headerLineTitle'>Sent:</span><s=
+pan class=3D'headerLineText'>17 May 2016 21:00:00 +0000</span><br/><span cl=
+ass=3D'headerLineTitle'>To:</span><span class=3D'headerLineText'>to@mail=2Ec=
+om</span><br/><span class=3D'headerLineTitle'>Subject:</span><span class=3D'=
+headerLineText'>Some subject</span><br/><br/></h1><br/><h3>Email example</h=
+3><br/><p>Creating an <b><u>outlook message (msg)</u></b> file using Aspose=
+=2EEmail=2E</p></body></html>

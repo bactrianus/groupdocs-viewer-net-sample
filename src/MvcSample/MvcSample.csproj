@@ -42,6 +42,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Aspose.Pdf, Version=11.4.0.0, Culture=neutral, PublicKeyToken=6947866647e416ec, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\groupdocs-viewer-net\resources\Packages\Aspose.Pdf.11.4.0\lib\net2.0\Aspose.Pdf.dll</HintPath>
+    </Reference>
     <Reference Include="GroupDocs.Viewer, Version=3.2.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\groupdocs-viewer-dotnet.3.2.0\lib\GroupDocs.Viewer.dll</HintPath>
       <Private>True</Private>
@@ -121,7 +125,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="Helpers\FileDataJsonSerializer.cs" />
+    <Compile Include="Helpers\DocumentInfoJsonSerializer.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ViewerController.cs" />
     <Compile Include="Global.asax.cs">
@@ -135,20 +139,36 @@
     <Compile Include="Helpers\Utils.cs" />
     <Compile Include="Models\FileBrowserTreeDataResponse.cs" />
     <Compile Include="Models\GetDocumentPageHtmlParameters.cs" />
+    <Compile Include="Models\GetDocumentPageHtmlResult.cs" />
     <Compile Include="Models\GetDocumentPageImageParameters.cs" />
     <Compile Include="Models\GetFileParameters.cs" />
     <Compile Include="Models\GetImageUrlsParameters.cs" />
     <Compile Include="Models\GetResourceForHtmlParameters.cs" />
+    <Compile Include="Models\HtmlPageContent.cs" />
     <Compile Include="Models\ReorderPageParameters.cs" />
     <Compile Include="Models\RotatePageParameters.cs" />
     <Compile Include="Models\ViewDocumentParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\candy.pdf" />
-    <Content Include="App_Data\demo.docx" />
     <Content Include="App_Data\sample.pptx" />
     <Content Include="App_Data\sample.xlsx" />
+    <Content Include="App_Data\test-files\Email\html\document.html" />
+    <Content Include="App_Data\test-files\Image\bmp\document.bmp" />
+    <Content Include="App_Data\test-files\Image\gif\document.gif" />
+    <Content Include="App_Data\test-files\Image\ico\document-multipage.ico" />
+    <Content Include="App_Data\test-files\Image\ico\document.ico" />
+    <Content Include="App_Data\test-files\Image\jpeg\document.jpeg" />
+    <Content Include="App_Data\test-files\Image\png\attachment-image.png" />
+    <Content Include="App_Data\test-files\Image\png\document.png" />
+    <Content Include="App_Data\test-files\Image\tiff\three-frames.tiff" />
+    <Content Include="App_Data\test-files\Tiff\tiff\document-multipage.tiff" />
+    <Content Include="App_Data\test-files\Tiff\tiff\document.tiff" />
+    <Content Include="App_Data\test-files\Words\html\document.html" />
+    <Content Include="App_Data\test-files\Words\htm\document.htm" />
+    <Content Include="App_Data\test-files\Words\txt\document.txt" />
+    <Content Include="App_Data\test-files\Words\txt\shift-jis-encoded.txt" />
+    <Content Include="App_Data\test-files\Words\xml\document.xml" />
     <Content Include="Content\CSS\bootstrap.css" />
     <Content Include="Content\CSS\dialog.css" />
     <Content Include="Content\CSS\groupdocsViewer.all.css" />
@@ -203,6 +223,65 @@
     <Content Include="Content\fonts\PT_Sans-Web-Regular.eot" />
     <Content Include="Content\fonts\PT_Sans-Web-Regular.ttf" />
     <Content Include="Content\fonts\PT_Sans-Web-Regular.woff" />
+    <Content Include="App_Data\sample.docx" />
+    <Content Include="App_Data\sample.pdf" />
+    <Content Include="App_Data\test-files\AutoCad\dwg\document.dwg" />
+    <Content Include="App_Data\test-files\AutoCad\dxf\document.dxf" />
+    <Content Include="App_Data\test-files\Cells\csv\document.csv" />
+    <Content Include="App_Data\test-files\Cells\csv\shift-jis-encoded.csv" />
+    <Content Include="App_Data\test-files\Cells\ods\document.ods" />
+    <Content Include="App_Data\test-files\Cells\xlsb\document.xlsb" />
+    <Content Include="App_Data\test-files\Cells\xlsm\document.xlsm" />
+    <Content Include="App_Data\test-files\Cells\xlsx\document.xlsx" />
+    <Content Include="App_Data\test-files\Cells\xls\document.xls" />
+    <Content Include="App_Data\test-files\Cells\xls\one-sheet-three-pages.xls" />
+    <Content Include="App_Data\test-files\Cells\xls\timesheet.xls" />
+    <Content Include="App_Data\test-files\Diagram\vdw\document.vdw" />
+    <Content Include="App_Data\test-files\Diagram\vdx\document.vdx" />
+    <Content Include="App_Data\test-files\Diagram\vsdx\document.vsdx" />
+    <Content Include="App_Data\test-files\Diagram\vsd\document.vsd" />
+    <Content Include="App_Data\test-files\Diagram\vss\document.vss" />
+    <Content Include="App_Data\test-files\Diagram\vst\document.vst" />
+    <Content Include="App_Data\test-files\Diagram\vsx\document.vsx" />
+    <Content Include="App_Data\test-files\Diagram\vtx\document.vtx" />
+    <Content Include="App_Data\test-files\Email\eml\document.eml" />
+    <Content Include="App_Data\test-files\Email\mht\document.mht" />
+    <Content Include="App_Data\test-files\Email\msg\document-unicode.msg" />
+    <Content Include="App_Data\test-files\Email\msg\document-with-attachments.msg" />
+    <Content Include="App_Data\test-files\Email\msg\document.msg" />
+    <Content Include="App_Data\test-files\Pdf\epub\document.epub" />
+    <Content Include="App_Data\test-files\Pdf\epub\one-page-three-lines.epub" />
+    <Content Include="App_Data\test-files\Pdf\pdf\candy.pdf" />
+    <Content Include="App_Data\test-files\Pdf\pdf\document.pdf" />
+    <Content Include="App_Data\test-files\Pdf\pdf\empty-date-created.pdf" />
+    <Content Include="App_Data\test-files\Pdf\pdf\input.pdf" />
+    <Content Include="App_Data\test-files\Pdf\pdf\invalid-date-created.pdf" />
+    <Content Include="App_Data\test-files\Pdf\pdf\one-page-text.pdf" />
+    <Content Include="App_Data\test-files\Pdf\pdf\one-page-three-lines.pdf" />
+    <Content Include="App_Data\test-files\Pdf\xps\document.xps" />
+    <Content Include="App_Data\test-files\Photoshop\psd\document.psd" />
+    <Content Include="App_Data\test-files\Project\mpp\document.mpp" />
+    <Content Include="App_Data\test-files\Project\mpt\document.mpt" />
+    <Content Include="App_Data\test-files\Slides\odp\document.odp" />
+    <Content Include="App_Data\test-files\Slides\ppsx\document.ppsx" />
+    <Content Include="App_Data\test-files\Slides\pps\document.pps" />
+    <Content Include="App_Data\test-files\Slides\pptx\document.pptx" />
+    <Content Include="App_Data\test-files\Slides\ppt\document.ppt" />
+    <Content Include="App_Data\test-files\Tasks\mpp\document.mpp" />
+    <Content Include="App_Data\test-files\Tasks\mpt\document.mpt" />
+    <Content Include="App_Data\test-files\Words\docm\document.docm" />
+    <Content Include="App_Data\test-files\Words\docx\document.docx" />
+    <Content Include="App_Data\test-files\Words\docx\one-page.docx" />
+    <Content Include="App_Data\test-files\Words\doc\attachment-word.doc" />
+    <Content Include="App_Data\test-files\Words\doc\document-with-revisions.doc" />
+    <Content Include="App_Data\test-files\Words\doc\document.doc" />
+    <Content Include="App_Data\test-files\Words\doc\one-page-text.doc" />
+    <Content Include="App_Data\test-files\Words\dotm\document.dotm" />
+    <Content Include="App_Data\test-files\Words\dotx\document.dotx" />
+    <Content Include="App_Data\test-files\Words\dot\document.dot" />
+    <Content Include="App_Data\test-files\Words\odt\document.odt" />
+    <Content Include="App_Data\test-files\Words\ott\document.ott" />
+    <Content Include="App_Data\test-files\Words\rtf\document.rtf" />
     <None Include="Properties\PublishProfiles\k2.pubxml" />
     <EmbeddedResource Include="Resources\LocalizedStrings-ar-AE.json" />
     <EmbeddedResource Include="Resources\LocalizedStrings-en-US.json" />

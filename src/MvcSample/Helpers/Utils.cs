@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
+using GroupDocs.Viewer.Converter.Options;
 using WatermarkPosition = MvcSample.Models.WatermarkPosition;
 
 namespace MvcSample.Helpers
@@ -161,7 +162,7 @@ namespace MvcSample.Helpers
             return filename;
         }
 
-        public static string GetImageMimeTypeFromFilename(string filename)
+        public static string GetMimeType(string filename)
         {
             string fileExtension = Path.GetExtension(filename);
             if (!String.IsNullOrWhiteSpace(fileExtension) && fileExtension.StartsWith("."))
@@ -186,6 +187,27 @@ namespace MvcSample.Helpers
                     break;
             }
             return mimeType;
+        }
+
+        public static string GetMimeType(ConvertImageFileType convertImageFileType)
+        {
+            string contentType;
+            switch (convertImageFileType)
+            {
+                case ConvertImageFileType.JPG:
+                    contentType = "image/jpeg";
+                    break;
+                case ConvertImageFileType.BMP:
+                    contentType = "image/bmp";
+                    break;
+                case ConvertImageFileType.PNG:
+                    contentType = "image/png"; ;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return contentType;
         }
 
         public static HtmlResourceType GetResourceType(string resourceName)
@@ -293,22 +315,6 @@ namespace MvcSample.Helpers
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-        }
-
-        public static List<string> GetCssClasses(string pageHtml)
-        {
-            var regex = new Regex("class=['\"]([a-zA-Z0-9\\s]+)['\"]", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
-
-            var matches = regex.Matches(pageHtml);
-
-            List<string> classes = new List<string>();
-            for (int i = 0; i < matches.Count; i++)
-            {
-                var values = matches[i].Groups[1].Value.Split(' ').ToList();
-                classes.AddRange(values);
-            }
-
-            return classes.Distinct().ToList();
         }
     }
 }
