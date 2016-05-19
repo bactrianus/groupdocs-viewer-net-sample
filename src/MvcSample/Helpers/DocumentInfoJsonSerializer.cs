@@ -53,7 +53,7 @@ namespace MvcSample.Helpers
                 return SerializeWords();
 
             var isCellsFileData = _documentInfo.Pages.Any(_ => !string.IsNullOrEmpty(_.Name));
-            if (isCellsFileData)
+            if (isCellsFileData && _options.IsHtmlMode)
                 return SerializeCells();
 
             return SerializeDefault();
@@ -324,6 +324,7 @@ namespace MvcSample.Helpers
     public class SerializationOptions
     {
         public bool UsePdf { get; set; }
+        public bool IsHtmlMode { get; set; }
         public bool SupportListOfBookmarks { get; set; }
         public bool SupportListOfContentControls { get; set; }
     }

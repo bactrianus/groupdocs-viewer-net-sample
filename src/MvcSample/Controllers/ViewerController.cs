@@ -491,6 +491,7 @@ namespace MvcSample.Controllers
             SerializationOptions serializationOptions = new SerializationOptions
             {
                 UsePdf = false,
+                IsHtmlMode = true,
                 SupportListOfBookmarks = request.SupportListOfBookmarks,
                 SupportListOfContentControls = request.SupportListOfContentControls
             };
