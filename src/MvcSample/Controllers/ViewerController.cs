@@ -112,7 +112,7 @@ namespace MvcSample.Controllers
             var guid = parameters.Path;
 
             // Get document info
-            var documentInfoContainer = _imageHandler.GetDocumentInfo(new DocumentInfoOptions(guid));
+            var documentInfoContainer = _imageHandler.GetDocumentInfo(guid);
             
             var pageNumbers = documentInfoContainer.Pages.Select(_ => _.Number).ToArray();
             var applicationHost = GetApplicationHost();
@@ -287,7 +287,7 @@ namespace MvcSample.Controllers
 
             if (parameters.Rotate && parameters.Width.HasValue)
             {
-                DocumentInfoContainer documentInfoContainer = _imageHandler.GetDocumentInfo(new DocumentInfoOptions(guid));
+                DocumentInfoContainer documentInfoContainer = _imageHandler.GetDocumentInfo(guid);
 
                 int pageAngle = documentInfoContainer.Pages[pageIndex].Angle;
                 var isHorizontalView = pageAngle == 90 || pageAngle == 270;
@@ -333,7 +333,7 @@ namespace MvcSample.Controllers
             string guid = parameters.Path;
             int pageIndex = parameters.PageNumber;
 
-            DocumentInfoContainer documentInfoContainer = _imageHandler.GetDocumentInfo(new DocumentInfoOptions(guid));
+            DocumentInfoContainer documentInfoContainer = _imageHandler.GetDocumentInfo(guid);
             int pageNumber = documentInfoContainer.Pages[pageIndex].Number;
 
             RotatePageOptions rotatePageOptions = new RotatePageOptions(guid, pageNumber, parameters.RotationAmount);
@@ -351,7 +351,7 @@ namespace MvcSample.Controllers
         {
             string guid = parameters.Path;
 
-            DocumentInfoContainer documentInfoContainer = _imageHandler.GetDocumentInfo(new DocumentInfoOptions(guid));
+            DocumentInfoContainer documentInfoContainer = _imageHandler.GetDocumentInfo(guid);
 
             int pageNumber = documentInfoContainer.Pages[parameters.OldPosition].Number;
             int newPosition = parameters.NewPosition + 1;
@@ -366,7 +366,7 @@ namespace MvcSample.Controllers
         {
             var pageContents = new List<HtmlPageContent>();
 
-            var documentInfo = _htmlHandler.GetDocumentInfo(new DocumentInfoOptions(guid));
+            var documentInfo = _htmlHandler.GetDocumentInfo(guid);
 
             var htmlPages = _htmlHandler.GetPages(guid, htmlOptions);
             foreach (var page in htmlPages)
@@ -460,7 +460,7 @@ namespace MvcSample.Controllers
             var guid = request.Path;
 
             // Get document info
-            var documentInfo = _imageHandler.GetDocumentInfo(new DocumentInfoOptions(guid));
+            var documentInfo = _imageHandler.GetDocumentInfo(guid);
 
             // Serialize document info
             SerializationOptions serializationOptions = new SerializationOptions
@@ -485,7 +485,7 @@ namespace MvcSample.Controllers
             var fileName = Path.GetFileName(request.Path);
 
             // Get document info
-            var documentInfo = _htmlHandler.GetDocumentInfo(new DocumentInfoOptions(guid));
+            var documentInfo = _htmlHandler.GetDocumentInfo(guid);
 
             // Serialize document info
             SerializationOptions serializationOptions = new SerializationOptions
