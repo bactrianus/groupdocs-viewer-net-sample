@@ -401,12 +401,24 @@ namespace MvcSample.Controllers
                     var pageData = documentInfo.Pages.Single(_ => _.Number == page.PageNumber);
 
                     css = ".grpdx .ie .doc-page {font-size:0;}";
-                    html = string.Format("<div style='width:{0}px;height:{1}px;font-size:0'>" +
+                    if (documentInfo.DocumentType == DocumentTypeName.DIAGRAM)
+                    {
+                        html = string.Format("<div style='width:{0}px;height:{1}px;font-size:0'>" +
+                         "<img style='width:{0}px;height:{1}px;font-size:0' src='{2}'/>" +
+                         "</div>",
+                         600,
+                         800,
+                         src);
+                    }
+                    else
+                    {
+                        html = string.Format("<div style='width:{0}px;height:{1}px;font-size:0'>" +
                         "<img style='width:{0}px;height:{1}px;font-size:0' src='{2}'/>" +
                         "</div>",
                         pageData.Width,
                         pageData.Height,
                         src);
+                    }
                 }
 
                 //wrap svg tags
