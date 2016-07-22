@@ -129,31 +129,29 @@ namespace MvcSample.Controllers
                 ? Path.GetFileName(parameters.Path)
                 : Uri.EscapeDataString(parameters.DisplayName);
 
+            var guid = parameters.Path;
+
             Stream fileStream;
             if (parameters.GetPdf)
             {
                 displayName = Path.ChangeExtension(displayName, "pdf");
 
-                var options = new PdfFileOptions
-                {
-                    Guid = parameters.Path,
-                    Watermark = Utils.GetWatermark(parameters.WatermarkText, parameters.WatermarkColor, parameters.WatermarkPosition, parameters.WatermarkWidth),
-                };
+                var options = new PdfFileOptions();
+                options.Transformations |= Transformation.Reorder;
 
+                if (!string.IsNullOrEmpty(parameters.WatermarkText))
+                    options.Watermark = Utils.GetWatermark(parameters.WatermarkText, parameters.WatermarkColor, parameters.WatermarkPosition, parameters.WatermarkWidth);
                 if (parameters.IsPrintable)
-                    options.AddPrintAction = true;
-
+                    options.Transformations |= Transformation.AddPrintAction;
                 if (parameters.SupportPageRotation)
                     options.Transformations |= Transformation.Rotate;
 
-                options.Transformations |= Transformation.Reorder;
-
-                var pdfFileResponse = _htmlHandler.GetPdfFile(options);
+                var pdfFileResponse = _htmlHandler.GetPdfFile(guid, options);
                 fileStream = pdfFileResponse.Stream;
             }
             else
             {
-                var fileResponse = _htmlHandler.GetFile(parameters.Path);
+                var fileResponse = _htmlHandler.GetFile(guid);
                 fileStream = fileResponse.Stream;
             }
 
@@ -174,22 +172,25 @@ namespace MvcSample.Controllers
                 ? Path.GetFileName(parameters.Path)
                 : Uri.EscapeDataString(parameters.DisplayName);
 
-            var options = new PdfFileOptions
-            {
-                Guid = parameters.Path,
-                Watermark = Utils.GetWatermark(parameters.WatermarkText, parameters.WatermarkColor, parameters.WatermarkPosition, parameters.WatermarkWidth)
-            };
+            var guid = parameters.Path;
 
-            if (parameters.IsPrintable)
-                options.AddPrintAction = true;
-
-            if (parameters.SupportPageRotation)
-                options.Transformations |= Transformation.Rotate;
+            var options = new PdfFileOptions();
             options.Transformations |= Transformation.Reorder;
 
-            var response = _htmlHandler.GetPdfFile(options);
+            if (!string.IsNullOrEmpty(parameters.WatermarkText))
+                options.Watermark = Utils.GetWatermark(parameters.WatermarkText, parameters.WatermarkColor, parameters.WatermarkPosition, parameters.WatermarkWidth);
+            if (parameters.IsPrintable)
+                options.Transformations |= Transformation.AddPrintAction;
+            if (parameters.SupportPageRotation)
+                options.Transformations |= Transformation.Rotate;
+           
+            var response = _htmlHandler.GetPdfFile(guid, options);
 
-            var contentDispositionString = new ContentDisposition { FileName = displayName, Inline = true }.ToString();
+            var contentDispositionString = new ContentDisposition
+            {
+                FileName = displayName,
+                Inline = true
+            }.ToString();
             Response.AddHeader("Content-Disposition", contentDispositionString);
 
             return File(((MemoryStream)response.Stream).ToArray(), "application/pdf");
@@ -337,14 +338,12 @@ namespace MvcSample.Controllers
             int pageNumber = documentInfoContainer.Pages[pageIndex].Number;
 
             RotatePageOptions rotatePageOptions = new RotatePageOptions(guid, pageNumber, parameters.RotationAmount);
-            RotatePageContainer rotatePageContainer = _imageHandler.RotatePage(rotatePageOptions);
+            _imageHandler.RotatePage(rotatePageOptions);
 
-            RotatePageResponse response = new RotatePageResponse
-            {
-                resultAngle = rotatePageContainer.CurrentRotationAngle
-            };
+            documentInfoContainer = _imageHandler.GetDocumentInfo(guid);
+            var resultAngle = documentInfoContainer.Pages[pageIndex].Angle;
 
-            return ToJsonResult(response);
+            return ToJsonResult(new RotatePageResponse { resultAngle = resultAngle });
         }
 
         public ActionResult ReorderPage(ReorderPageParameters parameters)
