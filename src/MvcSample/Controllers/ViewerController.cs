@@ -226,9 +226,7 @@ namespace MvcSample.Controllers
             }
 
             if (ignoreDocumentAbsence)
-            {
                 queryString["ignoreDocumentAbsence"] = ignoreDocumentAbsence.ToString().ToLower();
-            }
 
             queryString["useHtmlBasedEngine"] = useHtmlBasedEngine.ToString().ToLower();
             queryString["supportPageRotation"] = supportPageRotation.ToString().ToLower();
@@ -480,7 +478,8 @@ namespace MvcSample.Controllers
                 SupportListOfBookmarks = request.SupportListOfBookmarks,
                 SupportListOfContentControls = request.SupportListOfContentControls
             };
-            var documentInfoJson = new DocumentInfoJsonSerializer(documentInfo, serializationOptions).Serialize();
+            var documentInfoJson = new DocumentInfoJsonSerializer(documentInfo, serializationOptions)
+                .Serialize();
 
             // Build result
             result.documentDescription = documentInfoJson;
