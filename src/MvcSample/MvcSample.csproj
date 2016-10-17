@@ -42,12 +42,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Aspose.Pdf, Version=11.4.0.0, Culture=neutral, PublicKeyToken=6947866647e416ec, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\groupdocs-viewer-net\resources\Packages\Aspose.Pdf.11.4.0\lib\net2.0\Aspose.Pdf.dll</HintPath>
-    </Reference>
-    <Reference Include="GroupDocs.Viewer, Version=3.6.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
-      <HintPath>..\packages\groupdocs-viewer-dotnet.3.6.0\lib\GroupDocs.Viewer.dll</HintPath>
+    <Reference Include="GroupDocs.Viewer, Version=3.7.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\groupdocs-viewer-dotnet.3.7.0\lib\GroupDocs.Viewer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
@@ -155,6 +151,7 @@
     <Content Include="App_Data\sample.xlsx" />
     <Content Include="App_Data\test-files\Email\html\document.html" />
     <Content Include="App_Data\test-files\Image\bmp\document.bmp" />
+    <Content Include="App_Data\test-files\Image\emf\document.emf" />
     <Content Include="App_Data\test-files\Image\gif\document.gif" />
     <Content Include="App_Data\test-files\Image\ico\document-multipage.ico" />
     <Content Include="App_Data\test-files\Image\ico\document.ico" />
@@ -162,6 +159,7 @@
     <Content Include="App_Data\test-files\Image\png\attachment-image.png" />
     <Content Include="App_Data\test-files\Image\png\document.png" />
     <Content Include="App_Data\test-files\Image\tiff\three-frames.tiff" />
+    <Content Include="App_Data\test-files\Image\wmf\document.wmf" />
     <Content Include="App_Data\test-files\Tiff\tiff\document-multipage.tiff" />
     <Content Include="App_Data\test-files\Tiff\tiff\document.tiff" />
     <Content Include="App_Data\test-files\Words\html\document.html" />
@@ -225,8 +223,6 @@
     <Content Include="Content\fonts\PT_Sans-Web-Regular.woff" />
     <Content Include="App_Data\sample.docx" />
     <Content Include="App_Data\sample.pdf" />
-    <Content Include="App_Data\test-files\AutoCad\dwg\document.dwg" />
-    <Content Include="App_Data\test-files\AutoCad\dxf\document.dxf" />
     <Content Include="App_Data\test-files\Cells\csv\document.csv" />
     <Content Include="App_Data\test-files\Cells\csv\shift-jis-encoded.csv" />
     <Content Include="App_Data\test-files\Cells\ods\document.ods" />
@@ -267,8 +263,6 @@
     <Content Include="App_Data\test-files\Slides\pps\document.pps" />
     <Content Include="App_Data\test-files\Slides\pptx\document.pptx" />
     <Content Include="App_Data\test-files\Slides\ppt\document.ppt" />
-    <Content Include="App_Data\test-files\Tasks\mpp\document.mpp" />
-    <Content Include="App_Data\test-files\Tasks\mpt\document.mpt" />
     <Content Include="App_Data\test-files\Words\docm\document.docm" />
     <Content Include="App_Data\test-files\Words\docx\document.docx" />
     <Content Include="App_Data\test-files\Words\docx\one-page.docx" />
@@ -282,6 +276,17 @@
     <Content Include="App_Data\test-files\Words\odt\document.odt" />
     <Content Include="App_Data\test-files\Words\ott\document.ott" />
     <Content Include="App_Data\test-files\Words\rtf\document.rtf" />
+    <Content Include="App_Data\test-files\Image\dcm\document.dcm" />
+    <Content Include="App_Data\test-files\Image\djvu\document.djvu" />
+    <Content Include="App_Data\test-files\Words\mobi\document.mobi" />
+    <Content Include="App_Data\test-files\DjVu\cz-book_color.djvu" />
+    <Content Include="App_Data\test-files\DjVu\rs20846.djvu" />
+    <Content Include="App_Data\test-files\DjVu\superhero.djvu" />
+    <Content Include="App_Data\test-files\Cad\dwg\document-dimmensions-32x120.dwg" />
+    <Content Include="App_Data\test-files\Cad\dwg\document-dimmensions-7x9.dwg" />
+    <Content Include="App_Data\test-files\Cad\dwg\document.dwg" />
+    <Content Include="App_Data\test-files\Cad\dxf\document.dxf" />
+    <Content Include="App_Data\test-files\Image\xcf\document.xcf" />
     <None Include="Properties\PublishProfiles\k2.pubxml" />
     <EmbeddedResource Include="Resources\LocalizedStrings-ar-AE.json" />
     <EmbeddedResource Include="Resources\LocalizedStrings-en-US.json" />

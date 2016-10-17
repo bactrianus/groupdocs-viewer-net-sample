@@ -32,10 +32,8 @@ namespace MvcSample.Controllers
         private readonly string _tempPath = AppDomain.CurrentDomain.GetData("DataDirectory") + "\\Temp";
 
         // Image converter settings
-        private const bool UsePdfInImageEngine = true;
+        private const bool UsePdfInImageEngine = false;
         private readonly ConvertImageFileType _convertImageFileType = ConvertImageFileType.JPG;
-
-        private readonly Dictionary<string, Stream> _streams = new Dictionary<string, Stream>();
 
         public ViewerController()
         {
@@ -57,9 +55,6 @@ namespace MvcSample.Controllers
             };
 
             _imageHandler = new ViewerImageHandler(imageConfig);
-
-            _streams.Add("ProcessFileFromStreamExample_1.pdf", HttpWebRequest.Create("http://unfccc.int/resource/docs/convkp/kpeng.pdf").GetResponse().GetResponseStream());
-            _streams.Add("ProcessFileFromStreamExample_2.doc", HttpWebRequest.Create("http://www.acm.org/sigs/publications/pubform.doc").GetResponse().GetResponseStream());
         }
 
         [HttpPost]
@@ -67,8 +62,6 @@ namespace MvcSample.Controllers
         {
             if (Utils.IsValidUrl(request.Path))
                 request.Path = DownloadToStorage(request.Path);
-            else if (_streams.ContainsKey(request.Path))
-                request.Path = SaveStreamToStorage(request.Path);
 
             var result = new ViewDocumentResponse
             {
@@ -444,24 +437,6 @@ namespace MvcSample.Controllers
                 Utils.DownloadFile(url, filePath);
 
             return fileNameFromUrl;
-        }
-
-        private string SaveStreamToStorage(string key)
-        {
-            var stream = _streams[key];
-            var savePath = Path.Combine(_storagePath, key);
-
-            using (new InterProcessLock(savePath))
-            {
-                using (var fileStream = System.IO.File.Create(savePath))
-                {
-                    if (stream.CanSeek)
-                        stream.Seek(0, SeekOrigin.Begin);
-                    stream.CopyTo(fileStream);
-                }
-
-                return savePath;
-            }
         }
 
         private void ViewDocumentAsImage(ViewDocumentParameters request, ViewDocumentResponse result)

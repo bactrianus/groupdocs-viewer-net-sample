@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var applicationPath = string.Format("{0}://{1}{2}", Request.Url.Scheme, Request.Url.Authority, Url.Content("~"));
+}
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -13,7 +17,7 @@
     <script src="/Scripts/modernizr.2.6.2.Transform2d.min.js"></script>
     <script src="/Scripts/installableViewer.js"></script>
 
-    <script type='text/javascript'> $.ui.groupdocsViewer.prototype.applicationPath = 'http://localhost:56599/';</script>
+    <script type='text/javascript'> $.ui.groupdocsViewer.prototype.applicationPath = '@applicationPath';</script>
     <script type='text/javascript'> $.ui.groupdocsViewer.prototype.useHttpHandlers = false;</script>
     <script src="/Scripts/GroupdocsViewer.all.js"></script>
     
@@ -22,9 +26,7 @@
     <link href="~/Content/CSS/dialog.css" rel="stylesheet" />
 </head>
 <body>
-    
-        @RenderBody()
-    
+    @RenderBody()
     @RenderSection("scripts", required: false)
 </body>
 </html>
