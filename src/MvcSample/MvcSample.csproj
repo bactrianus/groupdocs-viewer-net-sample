@@ -42,8 +42,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GroupDocs.Viewer, Version=3.7.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
-      <HintPath>..\packages\groupdocs-viewer-dotnet.3.7.0\lib\GroupDocs.Viewer.dll</HintPath>
+    <Reference Include="GroupDocs.Viewer, Version=16.10.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\groupdocs-viewer-dotnet.16.10.0\lib\GroupDocs.Viewer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
@@ -149,7 +149,6 @@
   <ItemGroup>
     <Content Include="App_Data\sample.pptx" />
     <Content Include="App_Data\sample.xlsx" />
-    <Content Include="App_Data\test-files\Email\html\document.html" />
     <Content Include="App_Data\test-files\Image\bmp\document.bmp" />
     <Content Include="App_Data\test-files\Image\emf\document.emf" />
     <Content Include="App_Data\test-files\Image\gif\document.gif" />
@@ -256,8 +255,6 @@
     <Content Include="App_Data\test-files\Pdf\pdf\one-page-three-lines.pdf" />
     <Content Include="App_Data\test-files\Pdf\xps\document.xps" />
     <Content Include="App_Data\test-files\Photoshop\psd\document.psd" />
-    <Content Include="App_Data\test-files\Project\mpp\document.mpp" />
-    <Content Include="App_Data\test-files\Project\mpt\document.mpt" />
     <Content Include="App_Data\test-files\Slides\odp\document.odp" />
     <Content Include="App_Data\test-files\Slides\ppsx\document.ppsx" />
     <Content Include="App_Data\test-files\Slides\pps\document.pps" />
@@ -287,6 +284,20 @@
     <Content Include="App_Data\test-files\Cad\dwg\document.dwg" />
     <Content Include="App_Data\test-files\Cad\dxf\document.dxf" />
     <Content Include="App_Data\test-files\Image\xcf\document.xcf" />
+    <Content Include="App_Data\test-files\Pdf\pdf\document-with-ligatures.pdf" />
+    <Content Include="App_Data\test-files\Pdf\pdf\dynamic-xfa-form.pdf" />
+    <Content Include="App_Data\test-files\Pdf\pdf\inaccessible-date-created.pdf" />
+    <Content Include="App_Data\test-files\Pdf\pdf\incorrect-rendered-controls.pdf" />
+    <Content Include="App_Data\test-files\Pdf\pdf\one-page-with-layers.pdf" />
+    <Content Include="App_Data\test-files\Cells\xls\one-sheet-no-data.xls" />
+    <Content Include="App_Data\test-files\Cells\xlsx\internal-hyperlinks.xlsx" />
+    <Content Include="App_Data\test-files\Cells\xlsx\one-page-1000-rows.xlsx" />
+    <Content Include="App_Data\test-files\Cells\xlsx\three-sheets-last-empty.xlsx" />
+    <Content Include="App_Data\test-files\Cells\xlsx\two-pages-second-hidden.xlsx" />
+    <Content Include="App_Data\test-files\Tasks\mpp\document.mpp" />
+    <Content Include="App_Data\test-files\Tasks\mpt\document.mpt" />
+    <Content Include="App_Data\test-files\Words\doc\contains-utf8-characters.doc" />
+    <Content Include="App_Data\test-files\Words\doc\throwed-exception.doc" />
     <None Include="Properties\PublishProfiles\k2.pubxml" />
     <EmbeddedResource Include="Resources\LocalizedStrings-ar-AE.json" />
     <EmbeddedResource Include="Resources\LocalizedStrings-en-US.json" />
