@@ -29,10 +29,10 @@ namespace MvcSample.Controllers
 
         // App_Data folder path
         private readonly string _storagePath = AppDomain.CurrentDomain.GetData("DataDirectory").ToString();
-        private readonly string _tempPath = AppDomain.CurrentDomain.GetData("DataDirectory") + "\\Temp";
+        private readonly string _cachePath = AppDomain.CurrentDomain.GetData("DataDirectory") + "\\cache";
 
         // Image converter settings
-        private const bool UsePdfInImageEngine = false;
+        private const bool UsePdfInImageEngine = true;
         private readonly ConvertImageFileType _convertImageFileType = ConvertImageFileType.JPG;
 
         public ViewerController()
@@ -40,7 +40,7 @@ namespace MvcSample.Controllers
             var htmlConfig = new ViewerConfig
             {
                 StoragePath = _storagePath,
-                TempPath = _tempPath,
+                CachePath = _cachePath,
                 UseCache = true
             };
 
@@ -49,7 +49,7 @@ namespace MvcSample.Controllers
             var imageConfig = new ViewerConfig
             {
                 StoragePath = _storagePath,
-                TempPath = _tempPath,
+                CachePath = _cachePath,
                 UseCache = true,
                 UsePdf = UsePdfInImageEngine
             };
@@ -88,13 +88,13 @@ namespace MvcSample.Controllers
             if (!string.IsNullOrEmpty(parameters.Path))
                 path = Path.Combine(path, parameters.Path);
 
-            var request = new FileTreeOptions(path);
-            var tree = _htmlHandler.LoadFileTree(request);
+            var options = new FileListOptions(path);
+            var container = _htmlHandler.GetFileList(options);
 
             var result = new FileBrowserTreeDataResponse
             {
-                nodes = Utils.ToFileTreeNodes(parameters.Path, tree.FileTree).ToArray(),
-                count = tree.FileTree.Count
+                nodes = Utils.ToFileTreeNodes(parameters.Path, container.Files).ToArray(),
+                count = container.Files.Count
             };
 
             return ToJsonResult(result);
@@ -250,6 +250,8 @@ namespace MvcSample.Controllers
                 HtmlResourcePrefix = GetHtmlResourcePrefix(guid),
             };
 
+            htmlOptions.CellsOptions.OnePagePerSheet = false;
+
             HtmlPageContent pageContent = GetHtmlPageContents(guid, htmlOptions).Single();
 
             var result = new GetDocumentPageHtmlResult
@@ -276,6 +278,8 @@ namespace MvcSample.Controllers
                 PageNumber = pageNumber,
                 JpegQuality = parameters.Quality.GetValueOrDefault()
             };
+
+            imageOptions.CellsOptions.OnePagePerSheet = false;
 
             if (parameters.Rotate && parameters.Width.HasValue)
             {
