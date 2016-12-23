@@ -248,9 +248,8 @@ namespace MvcSample.Controllers
                 CountPagesToConvert = 1,
                 IsResourcesEmbedded = false,
                 HtmlResourcePrefix = GetHtmlResourcePrefix(guid),
+                CellsOptions = { OnePagePerSheet = false }
             };
-
-            htmlOptions.CellsOptions.OnePagePerSheet = false;
 
             HtmlPageContent pageContent = GetHtmlPageContents(guid, htmlOptions).Single();
 
