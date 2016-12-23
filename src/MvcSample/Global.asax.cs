@@ -6,7 +6,8 @@ namespace MvcSample
 {
     public class MvcApplication : System.Web.HttpApplication
     {
-        private string _licensePath = "c:\\licenses\\GroupDocs.Viewer.lic";
+        private readonly string _licensePath = "c:\\licenses\\GroupDocs.Viewer.lic";
+
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
@@ -14,9 +15,9 @@ namespace MvcSample
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-
-            GroupDocs.Viewer.License lic = new GroupDocs.Viewer.License();
-            lic.SetLicense(_licensePath);
+            //Set GroupDocs.Viewer License
+            GroupDocs.Viewer.License license = new GroupDocs.Viewer.License();
+            license.SetLicense(_licensePath);
         }
     }
 }

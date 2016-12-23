@@ -114,9 +114,7 @@
       <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Content\TempStorage\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -276,9 +274,6 @@
     <Content Include="App_Data\test-files\Image\dcm\document.dcm" />
     <Content Include="App_Data\test-files\Image\djvu\document.djvu" />
     <Content Include="App_Data\test-files\Words\mobi\document.mobi" />
-    <Content Include="App_Data\test-files\DjVu\cz-book_color.djvu" />
-    <Content Include="App_Data\test-files\DjVu\rs20846.djvu" />
-    <Content Include="App_Data\test-files\DjVu\superhero.djvu" />
     <Content Include="App_Data\test-files\Cad\dwg\document-dimmensions-32x120.dwg" />
     <Content Include="App_Data\test-files\Cad\dwg\document-dimmensions-7x9.dwg" />
     <Content Include="App_Data\test-files\Cad\dwg\document.dwg" />
