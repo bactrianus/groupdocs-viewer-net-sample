@@ -32,7 +32,7 @@ namespace MvcSample.Controllers
         private readonly string _cachePath = AppDomain.CurrentDomain.GetData("DataDirectory") + "\\cache";
 
         // Image converter settings
-        private const bool UsePdfInImageEngine = true;
+        private const bool UsePdfInImageEngine = false;
         private readonly ConvertImageFileType _convertImageFileType = ConvertImageFileType.JPG;
 
         public ViewerController()
@@ -245,7 +245,7 @@ namespace MvcSample.Controllers
             HtmlOptions htmlOptions = new HtmlOptions
             {
                 PageNumber = pageNumber,
-                CountPagesToConvert = 1,
+                CountPagesToRender = 1,
                 IsResourcesEmbedded = false,
                 HtmlResourcePrefix = GetHtmlResourcePrefix(guid),
                 CellsOptions = { OnePagePerSheet = false }
@@ -273,7 +273,7 @@ namespace MvcSample.Controllers
                 Watermark = Utils.GetWatermark(parameters.WatermarkText, parameters.WatermarkColor, 
                 parameters.WatermarkPosition, parameters.WatermarkWidth),
                 Transformations = parameters.Rotate ? Transformation.Rotate : Transformation.None,
-                CountPagesToConvert = 1,
+                CountPagesToRender = 1,
                 PageNumber = pageNumber,
                 JpegQuality = parameters.Quality.GetValueOrDefault()
             };
@@ -331,8 +331,8 @@ namespace MvcSample.Controllers
             DocumentInfoContainer documentInfoContainer = _imageHandler.GetDocumentInfo(guid);
             int pageNumber = documentInfoContainer.Pages[pageIndex].Number;
 
-            RotatePageOptions rotatePageOptions = new RotatePageOptions(guid, pageNumber, parameters.RotationAmount);
-            _imageHandler.RotatePage(rotatePageOptions);
+            RotatePageOptions rotatePageOptions = new RotatePageOptions(pageNumber, parameters.RotationAmount);
+            _imageHandler.RotatePage(guid, rotatePageOptions);
 
             documentInfoContainer = _imageHandler.GetDocumentInfo(guid);
             var resultAngle = documentInfoContainer.Pages[pageIndex].Angle;
@@ -349,8 +349,8 @@ namespace MvcSample.Controllers
             int pageNumber = documentInfoContainer.Pages[parameters.OldPosition].Number;
             int newPosition = parameters.NewPosition + 1;
 
-            ReorderPageOptions reorderPageOptions = new ReorderPageOptions(guid, pageNumber, newPosition);
-            _imageHandler.ReorderPage(reorderPageOptions);
+            ReorderPageOptions reorderPageOptions = new ReorderPageOptions(pageNumber, newPosition);
+            _imageHandler.ReorderPage(guid, reorderPageOptions);
 
             return ToJsonResult(new ReorderPageResponse());
         }
@@ -491,7 +491,7 @@ namespace MvcSample.Controllers
                 IsResourcesEmbedded = Utils.IsImage(fileName),
                 HtmlResourcePrefix =  GetHtmlResourcePrefix(guid),
                 PageNumber = 1,
-                CountPagesToConvert = request.PreloadPagesCount.GetValueOrDefault(1)
+                CountPagesToRender = request.PreloadPagesCount.GetValueOrDefault(1)
             };
             var htmlPageContents = GetHtmlPageContents(guid, htmlOptions);
 
